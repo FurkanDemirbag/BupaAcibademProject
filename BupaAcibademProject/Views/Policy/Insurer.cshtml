@@ -1,0 +1,146 @@
+﻿@model InsurerModel
+@{
+    var countries = ViewBag.Countries as List<Country>;
+    var nationalities = ViewBag.Nationalities as List<Nationality>;
+}
+
+<div class="price-form">
+    <div class="text-center">
+        <h2>Sigorta Ettiren Girişi</h2>
+    </div>
+    <form action="" method="post" id="insurerForm">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>Sigorta Ettiren Tipi</label>
+                <div class="custom-control custom-radio custom-control-inline ml-4">
+                    <input type="radio" asp-for="CustomerType" value="@((int)CustomerType.PERSONAL)" id="Gender@((int)CustomerType.PERSONAL)" checked="checked" class="custom-control-input" onchange="javascript:changeCustomerType(this)" />
+                    <label class="custom-control-label" for="Gender@((int)CustomerType.PERSONAL)">Bireysel</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" asp-for="CustomerType" value="@((int)CustomerType.CORPORATE)" id="Gender@((int)CustomerType.CORPORATE)" class="custom-control-input" onchange="javascript:changeCustomerType(this)" />
+                    <label class="custom-control-label" for="Gender@((int)CustomerType.CORPORATE)">Kurumsal</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row row-center customerArea">
+            <div class="form-group col-md-4">
+                <label>TC Kimlik No</label>
+                <input type="number" class="form-control" name="TCKNo" maxlength="11" value="@(Model.TCKNo)" placeholder="TC Kimlik NO" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Yabancı Kimlik No</label>
+                <input type="number" class="form-control" name="ForeignTCKNo" maxlength="20" value="@(Model.ForeignTCKNo)" placeholder="Yabancı Kimlik No" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Pasaport No</label>
+                <input type="number" class="form-control" name="PassportNo" maxlength="7" value="@(Model.PassportNo)" placeholder="Pasaport No" />
+            </div>
+        </div>
+        <div class="form-row row-center companyArea d-none">
+            <div class="form-group col-md-4">
+                <label>Şirket Adı</label>
+                <input type="text" class="form-control" name="CompanyName" value="@(Model.CompanyName)" placeholder="Şirket Adı" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Vergi Dairesi</label>
+                <input type="text" class="form-control" name="VatOffice" value="@(Model.VatOffice)" placeholder="Vergi Dairesi" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Vergi Numarası</label>
+                <input type="number" class="form-control" name="VatNumber" maxlength="10" value="@(Model.VatNumber)" placeholder="Vergi Numarası" />
+            </div>
+        </div>
+        <div class="form-row row-center customerArea">
+            <div class="form-group col-md-4">
+                <label>Sigorta Ettiren Adı</label>
+                <input type="text" class="form-control" name="Name" maxlength="11" value="@(Model.Name)" placeholder="Ad" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Sigorta Ettiren Soyadı</label>
+                <input type="text" class="form-control" name="Surname" maxlength="20" value="@(Model.Surname)" placeholder="Soyad" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>Cinsiyet</label><br />
+                <div class="custom-control custom-radio custom-control-inline ml-4">
+                    <input type="radio" asp-for="Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" />
+                    <label class="custom-control-label" for="Gender@(((int)Gender.MALE)+5)">Erkek</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline ml-4">
+                    <input type="radio" asp-for="Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" />
+                    <label class="custom-control-label" for="Gender@(((int)Gender.FEMALE)+5)">Kadın</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row row-center">
+            <div class="form-group col-md-4">
+                <label>Telefon Numarası</label>
+                <input type="number" class="form-control" name="PhoneNumber" maxlength="10" value="@(Model.PhoneNumber)" placeholder="(5**) *** ** **" />
+            </div>
+            <div class="form-group col-md-4">
+                <label>E-Posta</label>
+                <input type="email" class="form-control" name="Email" value="@(Model.Email)" placeholder="E-Posta" />
+            </div>
+        </div>
+        <div class="form-row row-center customerArea">
+            <div class="form-group col-md-4">
+                <label>Ülke</label>
+                <select class="form-control" name="CountryId" onchange="javascript:fillCities(this)">
+                    <option value="0">Seçiniz</option>
+                    @if (countries != null)
+                    {
+                        foreach (var country in countries)
+                        {
+                            <option value="@(country.Id)">@(country.Name)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label>Uyruk</label>
+                <select class="form-control" name="NationalityId">
+                    <option value="0">Seçiniz</option>
+                    @if (nationalities != null)
+                    {
+                        foreach (var nationality in nationalities)
+                        {
+                            <option value="@(nationality.Id)">@(nationality.Name)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label>Doğum Tarihi</label>
+                <input type="date" class="form-control" name="DateOfBirth" value="@(Model.DateOfBirth)" placeholder="GG/AA/YYYY" />
+            </div>
+        </div>
+        <div class="form-row row-center">
+            <div class="form-group col-md-12">
+                <label>Adres</label>
+                <textarea rows="5" class="form-control" name="Address" value="@(Model.Address)" placeholder="Adres"></textarea>
+            </div>
+        </div>
+        <div class="form-row row-center">
+            <div class="form-group col-md-4">
+                <label>İl</label>
+                <select class="form-control" name="CityId" onchange="javascript:fillDistricts(this)">
+                    <option value="0">Seçiniz</option>
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label>İlçe</label>
+                <select class="form-control" name="DistrictId">
+                    <option value="0">Seçiniz</option>
+                </select>
+            </div>
+            <div class="form-group col-md-3 ml-5 mt-5 customerArea">
+                <input class="form-check-input mt-2" type="checkbox" id="InsurerIsInsured" name="InsurerIsInsured">
+                <label class="form-check-label" for="InsurerIsInsured">
+                    Sigorta ettiren aynı zamanda sigortalı mı?
+                </label>
+            </div>
+        </div>
+        <div class="btn-div mt-2">
+            <button type="submit" class="btn">İLERİ</button>
+        </div>
+    </form>
+</div>

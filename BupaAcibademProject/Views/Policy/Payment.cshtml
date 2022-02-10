@@ -1,0 +1,52 @@
+﻿@model PaymentModel
+
+<div class="price-form">
+    <div class="text-center">
+        <h2>Ödeme</h2>
+    </div>
+    <form action="" method="post" id="paymentForm">
+        <div class="row row-center">
+            <div class="col-lg-6 col-md-12 col-12">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="number">Kart Numarası</label>
+                        <input type="tel" class="form-control" name="CardNumber" id="CardNumber" placeholder="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Kart Üzerindeki İsim</label>
+                        <input type="text" class="form-control" name="CardHolderName" id="CardHolderName" placeholder="" /><br>
+                    </div>
+                    <div class="cardForm-Field50">
+                        <label for="expiry">AY / YIL</label><rb>
+                            <input type="tel" class="form-control secondRow" name="Expiration" id="Expiration" placeholder="AA/YY" />
+                    </div>
+                    <div class="cardForm-Field50">
+                        <label for="cvc">CVV</label><br>
+                        <input type="tel" class="form-control secondRow" name="CVC" id="CVC" placeholder="xxx" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12 col-12">
+                <div class="card-wrapper"></div>
+            </div>
+            <div class="btn-div mt-5">
+                <input type="hidden" name="InsurerId" />
+                <button type="submit" class="btn">ÖDEME YAP</button>
+            </div>
+        </div>
+    </form>
+</div>
+@section scripts{ 
+<script>
+    var card = new Card({
+        form: "form#paymentForm",
+        container: ".card-wrapper",
+        formSelectors: {
+            nameInput: "input#CardHolderName",
+            numberInput: "input#CardNumber",
+            expiryInput: "input#Expiration",
+            cvcInput: "input#CVC"
+        }
+    });
+</script>
+}

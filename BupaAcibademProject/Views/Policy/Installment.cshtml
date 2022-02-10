@@ -1,0 +1,52 @@
+﻿@model InstallmentModel
+
+<div class="price-form">
+    <div class="text-center">
+        <h2>Prim Bilgileri</h2>
+    </div>
+    <form action="" method="post" id="installmentForm">
+        <div class="form-row row-center">
+            <div class="form-group col-md-12 text-right">
+                <label>Teklif No: </label>
+                <span id="orderNo">#@(Model.OfferNumber != null ? Model.OfferNumber : "")</span>
+            </div>
+        </div>
+        <div class="form-row row-center">
+            <div class="form-group col-md-4 p-0">
+                <label>Ödeme Planı</label>
+                <select class="form-control" name="InstallmentId">
+                    <option value="0">Seçiniz</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row row-center">
+            <table class="table table-hover table-bordered" id="installmentTable">
+                <thead>
+                    <tr>
+                        <th scope="col">Taksit Adı</th>
+                        <th scope="col">Taksit Tutarı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Installments != null)
+                    {
+                        foreach (var installment in Model.Installments)
+                        {
+                            <tr>
+                                <td>@(installment.Key)</td>
+                                <td>@(string.Format("{0:N2 TL}", installment.Value))</td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td></td>
+                        <td><b>Toplam Prim: @(string.Format("{0:N2} TL", Model.TotalPrice))</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-div mt-2">
+            <button type="submit" class="btn"><i class="fas fa-arrow-right"></i> İLERİ</button>
+        </div>
+    </form>
+</div>

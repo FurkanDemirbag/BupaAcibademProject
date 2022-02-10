@@ -1,0 +1,45 @@
+﻿@model OfferModel
+
+<div class="price-form">
+    <div class="text-center">
+        <h2>Ürün Seçimi</h2>
+    </div>
+    <form action="" method="post" id="offerForm">
+        <div class="form-row row-center">
+            <div class="form-group col-md-12 text-right">
+                <label>Teklif No: </label>
+                <span id="orderNo">#@(Model.OfferNumber != null ? Model.OfferNumber : "")</span>
+            </div>
+        </div>
+        <table class="table table-hover table-bordered table-striped" id="productTable">
+            <thead>
+                <tr>
+                    <th scope="col">Teminatlar</th>
+                    <th scope="col">Medikal Hizmet Ağı</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ProductModels != null)
+                {
+                    var i = 0;
+                    foreach (var product in Model.ProductModels)
+                    {
+                        <tr>
+                            <td>@(product.ProductName)</td>
+                            <td>
+                                <div class="custom-control custom-radio custom-control-inline ml-4">
+                                    <input type="radio" asp-for="ProductModels[i].OfferId" value="@(product.OfferId)" id="Offer-@(product.OfferId)" class="custom-control-input" />
+                                    <label class="custom-control-label" for="Offer-@(product.OfferId)">@(string.Format("{0:N2} TL", product.TotalPrice))</label>
+                                </div>
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="btn-div mt-2">
+            <button type="submit" class="btn"><i class="fas fa-arrow-right"></i> İLERİ</button>
+        </div>
+    </form>
+</div>
