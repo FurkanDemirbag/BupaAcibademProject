@@ -28,8 +28,8 @@
                             <td>@(product.ProductName)</td>
                             <td>
                                 <div class="custom-control custom-radio custom-control-inline ml-4">
-                                    <input type="radio" asp-for="ProductModels[i].OfferId" value="@(product.OfferId)" id="Offer-@(product.OfferId)" class="custom-control-input" />
-                                    <label class="custom-control-label" for="Offer-@(product.OfferId)">@(string.Format("{0:N2} TL", product.TotalPrice))</label>
+                                    <input type="radio" asp-for="ProductModels[i].OfferIds" value="@(product.OfferIds)" id="Offer-@(product.OfferIds)" class="custom-control-input" />
+                                    <label class="custom-control-label" for="Offer-@(product.OfferIds)">@(string.Format("{0:N2} TL", product.TotalPrice))</label>
                                 </div>
                             </td>
                         </tr>

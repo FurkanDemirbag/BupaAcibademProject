@@ -269,7 +269,10 @@ namespace BupaAcibademProject.Service
                             {
                                 var customer = new Customer
                                 {
-                                    Id = Convert.ToInt32(dr["Id"])
+                                    Id = Convert.ToInt32(dr["Id"]),
+                                    PhoneNumber = dr["PhoneNumber"].ToString(),
+                                    TCKNo = dr["TCKNo"].ToString(),
+                                    DateOfBirth = Convert.ToDateTime(dr["DateOfBirth"])
                                 };
 
                                 customerList.Add(customer);
@@ -282,10 +285,186 @@ namespace BupaAcibademProject.Service
                     }
                 }
 
+                foreach (var item in customerList)
+                {
+                    var currentCustomer = customers.FirstOrDefault(a => a.DateOfBirth == item.DateOfBirth && a.TCKNo == item.TCKNo && a.PhoneNumber == item.PhoneNumber);
+                    if (currentCustomer != null)
+                    {
+                        try
+                        {
+                            var offerResult = CalculateAndSaveOffer(currentCustomer);
+                            if (!offerResult.Result.HasError && offerResult.Result.Data != null)
+                            {
+                                item.Offers = offerResult.Result.Data;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            return new Result<List<Customer>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                        }
+                    }
+                    
+                }
+
                 return new Result<List<Customer>>() { Data = customerList };
             }
 
             return new Result<List<Customer>>();
+        }
+
+        private async Task<Result<List<Offer>>> CalculateAndSaveOffer(CustomerModel customer)
+        {
+            if (customer != null)
+            {
+                var productList = GetProducts();
+
+                var offerList = new List<Offer>();
+
+                try
+                {
+                    var age = DateTime.Now.Year - customer.DateOfBirth.Year;
+                    var offerNumber = new Random().Next(100000, 1000000).ToString();
+
+                    if (!productList.Result.HasError && productList.Result.Data != null)
+                    {
+                        foreach (var product in productList.Result.Data)
+                        {
+                            var bodyMassIndex = CalculateBodyMassIndex(customer.Weight, customer.Height);
+                            if (bodyMassIndex == BodyMassIndex.LOW || bodyMassIndex == BodyMassIndex.OWERWEIGHT)
+                            {
+                                product.Price *= 5;
+                            }
+                            else if (bodyMassIndex == BodyMassIndex.OBESE)
+                            {
+                                product.Price *= 10;
+                            }
+
+                            if (age > 50)
+                            {
+                                product.Price *= 5;
+                            }
+                            else if (age > 65)
+                            {
+                                product.Price *= 10;
+                            }
+
+                            var offer = new Offer()
+                            {
+                                CustomerId = customer.CityId,
+                                ProductId = product.Id,
+                                TotalPrice = product.Price,
+                                CompanyName = "Bupa Acıbadem Sigorta",
+                                OfferNumber = offerNumber
+                            };
+
+                            var saveOfferResult = SaveOffer(offer);
+                            if (!saveOfferResult.Result.HasError && saveOfferResult.Result.Data != null)
+                            {
+                                offerList.Add(offer);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Result<List<Offer>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+
+                return new Result<List<Offer>>()
+                {
+                    Data = offerList
+                };
+            }
+
+            return new Result<List<Offer>>();
+        }
+
+        private async Task<Result<Offer>> SaveOffer(Offer offer)
+        {
+            if (offer != null)
+            {
+                try
+                {
+                    var validationResult = _validation.Validate(offer);
+                    if (validationResult.HasError)
+                    {
+                        return new Result<Offer>(validationResult);
+                    }
+
+                    _dal.AddInputParameter(
+                        new SqlParameter("@ProductId", offer.ProductId),
+                        new SqlParameter("@CustomerId", offer.CustomerId),
+                        new SqlParameter("@CompanyName", offer.CompanyName),
+                        new SqlParameter("@OfferNumber", offer.OfferNumber),
+                        new SqlParameter("@TotalPrice", offer.TotalPrice)
+                        );
+
+                    var offerResult = _dal.ExecuteQuery("sp_OfferSave", CommandType.StoredProcedure);
+
+                    return new Result<Offer>() { Data = offer };
+                }
+                catch (Exception ex)
+                {
+                    return new Result<Offer>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+            }
+
+            return new Result<Offer>();
+        }
+
+        private async Task<Result<List<Product>>> GetProducts()
+        {
+            var productList = new List<Product>();
+            try
+            {
+                var dr = _dal.ExecuteDrSelectQuery("sp_GetAllProducts", CommandType.StoredProcedure);
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        var product = new Product
+                        {
+                            Id = Convert.ToInt32(dr["Id"]),
+                            Name = dr["Name"].ToString(),
+                            Price = Convert.ToDecimal(dr["Price"]),
+                            CreateDate = Convert.ToDateTime(dr["CreateDate"]),
+                            UpdateDate = Convert.ToDateTime(dr["UpdateDate"])
+                        };
+
+                        productList.Add(product);
+                    }
+                }
+
+                return new Result<List<Product>>()
+                {
+                    Data = productList
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<Product>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+
+        private BodyMassIndex CalculateBodyMassIndex(decimal weight, decimal height)
+        {
+            height = height / 100;
+            var res = Convert.ToDouble(weight / (height * height));
+
+            if (res < 18.5)
+            {
+                return BodyMassIndex.LOW;
+            }
+            else if (res > 18.5 && res < 24.9)
+            {
+                return BodyMassIndex.NORMAL;
+            }
+            else if (res > 25 && res < 29.9)
+            {
+                return BodyMassIndex.OWERWEIGHT;
+            }
+
+            return BodyMassIndex.OBESE;
         }
     }
 }

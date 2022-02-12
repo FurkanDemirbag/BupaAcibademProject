@@ -102,6 +102,7 @@ namespace BupaAcibademProject.Domain.Entities
         public District District { get; set; }
 
         public List<Policy> Policies { get; set; }
+        public List<Offer> Offers { get; set; }
 
         public Customer() : base()
         {

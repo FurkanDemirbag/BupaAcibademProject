@@ -144,12 +144,16 @@ namespace BupaAcibademProject.Controllers
 
             _userAccessor.Store("CurrentCustomers", customerIds);
 
+            //if (result.Data.Customers)
+            //{
+
+            //}
+
             return this.SuccesJson();
         }
 
         public IActionResult Offer()
         {
-            var x = _userAccessor.CustomerIds;
             var model = new OfferModel();
 
             return View(model);

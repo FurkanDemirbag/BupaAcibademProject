@@ -11,7 +11,7 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
     public class OfferModel
     {
         [Display(Name = "Teklif No")]
-        [StringLength(11, MinimumLength = 11)]
+        [StringLength(11, MinimumLength = 6)]
         public string OfferNumber { get; set; }
 
         [Display(Name = "Teminatlar")]

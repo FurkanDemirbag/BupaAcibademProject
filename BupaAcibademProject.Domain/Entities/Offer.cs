@@ -16,7 +16,7 @@ namespace BupaAcibademProject.Domain.Entities
         public string CompanyName { get; set; }
 
         [Display(Name = "Teklif Numarası")]
-        [StringLength(11, MinimumLength = 11)]
+        [StringLength(11, MinimumLength = 6)]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public string OfferNumber { get; set; }
 
@@ -24,9 +24,10 @@ namespace BupaAcibademProject.Domain.Entities
         [Required(ErrorMessage = "{0} boş olamaz")]
         public int ProductId { get; set; }
 
-        [Display(Name = "Müşteri Sayısı")]
+        [Display(Name = "Customer Id")]
         [Required(ErrorMessage = "{0} boş olamaz")]
-        public int CustomerCount { get; set; }
+        public int CustomerId { get; set; }
+
 
         [Display(Name = "Toplam Fiyat")]
         [Required(ErrorMessage = "{0} boş olamaz")]
@@ -34,6 +35,7 @@ namespace BupaAcibademProject.Domain.Entities
 
 
         public Product Product { get; set; }
+        public Customer Customer { get; set; }
         public List<Policy> Policies { get; set; }
 
         public Offer(): base()

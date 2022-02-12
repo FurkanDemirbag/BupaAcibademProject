@@ -12,7 +12,7 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
     {
         [Display(Name = "Offer Id")]
         [Required(ErrorMessage = "{0} boş olamaz")]
-        public int OfferId { get; set; }
+        public string OfferIds { get; set; }
 
         [Display(Name = "Product Id")]
         public int ProductId { get; set; }
