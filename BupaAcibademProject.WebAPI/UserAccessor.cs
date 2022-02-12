@@ -32,6 +32,18 @@ namespace BupaAcibademProject.WebAPI
             }
         }
 
+        public List<int> CustomerIds
+        {
+            get
+            {
+                return Get<List<int>>("CurrentCustomers");
+            }
+            set
+            {
+                Store("CurrentCustomers", value);
+            }
+        }
+
         public string ClientIP
         {
             get

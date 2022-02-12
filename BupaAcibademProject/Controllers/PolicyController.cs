@@ -139,11 +139,17 @@ namespace BupaAcibademProject.Controllers
                 return this.ErrorJson("Sigortalı kaydedilirken hata oluştu.");
             }
 
+            var customerIds = new List<int>();
+            customerIds = result.Data.Customers.Select(a => a.Id).ToList();
+
+            _userAccessor.Store("CurrentCustomers", customerIds);
+
             return this.SuccesJson();
         }
 
         public IActionResult Offer()
         {
+            var x = _userAccessor.CustomerIds;
             var model = new OfferModel();
 
             return View(model);

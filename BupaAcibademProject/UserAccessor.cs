@@ -32,6 +32,18 @@ namespace BupaAcibademProject
             }
         }
 
+        public List<int> CustomerIds 
+        {
+            get
+            {
+                return Get<List<int>>("CurrentCustomers");
+            }
+            set
+            {
+                Store("CurrentCustomers", value);
+            }
+        }
+
         public string ClientIP
         {
             get
@@ -57,7 +69,6 @@ namespace BupaAcibademProject
                 return null;
             }
         }
-
 
         public void Clear(string key = null)
         {

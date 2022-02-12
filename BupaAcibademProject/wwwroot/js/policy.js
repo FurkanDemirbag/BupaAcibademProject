@@ -503,7 +503,6 @@ function replaceProductIndex(input, index) {
     var id = $(input).attr("id");
     if (id) {
         if ($(input).attr("type") == "radio") {
-            debugger;
             id = index + id;
             $(input).attr("id", id);
             $(input).parent().find("label").attr("for", id);

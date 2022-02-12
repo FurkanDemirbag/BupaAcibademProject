@@ -11,6 +11,7 @@ namespace BupaAcibademProject.Service
     {
         bool IsLogined { get; }
         Insurer Insurer { get; set; }
+        List<int> CustomerIds { get; set; }
         string ClientIP { get; }
         string RequestLink { get; }
         void Store<T>(string key, T data);
