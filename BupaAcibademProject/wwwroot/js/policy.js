@@ -447,6 +447,10 @@ function addCustomer(e) {
 
         addCustomerValidation(".customer" + index);
 
+        $(".customer" + index).find(":input").each(function () {
+            deleteCustomerValues(this);
+        });
+
         $(".customers .table").removeClass("d-none");
         var tBody = $(".customers .table tbody");
         $(tBody).append(
@@ -484,6 +488,10 @@ function deleteCustomer(e) {
         $(el).removeAttr("id");
         $(el).attr("id", "customer" + i)
     });
+
+    if ($(".customers tbody tr").length == 0) {
+        $(".customers .table").addClass("d-none");
+    }
 }
 
 function replaceProductIndex(input, index) {
@@ -495,6 +503,7 @@ function replaceProductIndex(input, index) {
     var id = $(input).attr("id");
     if (id) {
         if ($(input).attr("type") == "radio") {
+            debugger;
             id = index + id;
             $(input).attr("id", id);
             $(input).parent().find("label").attr("for", id);
@@ -527,4 +536,18 @@ function addCustomerValidation(el) {
     $(el).find(":input[name$='.Height']").rules("add", { required: true, number: true, notOnlyZero: '0', messages: { notOnlyZero: "Boy sıfır olamaz" } });
     $(el).find(":input[name$='.Weight']").rules("add", { required: true, number: true, notOnlyZero: '0', messages: { notOnlyZero: "Kilo sıfır olamaz" } });
     $(el).find(":input[name$='.Address']").rules("add", { required: true, maxlength: 400, minlength: 10 });
+}
+
+function deleteCustomerValues(el) {
+    if ($(el).hasClass("custom-control-input")) {
+        $(el).removeAttr("checked");
+    }
+    else if ($(el).parent().find("[name$='.ProximityType']").length > 0 || $(el).parent().find("[name$='.CountryId']").length > 0 || $(el).parent().find("[name$='.NationalityId']").length > 0 || $(el).parent().find("[name$='.JobId']").length > 0 || $(el).parent().find("[name$='.CityId']").length > 0 || $(el).parent().find("[name$='.DistrictId']").length > 0 ) {
+        $(el).find("option").each(function () {
+            $(this).removeAttr("selected");
+        });
+    }
+    else {
+        $(el).val(null);
+    }
 }

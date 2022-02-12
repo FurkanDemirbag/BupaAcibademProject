@@ -58,7 +58,7 @@
                     <div class="custom-control custom-radio custom-control-inline ml-4">
                         @if (Model.Gender == Gender.MALE)
                         {
-                            <input type="radio" name="customers[0].Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE))" class="custom-control-input" checked />
+                            <input type="radio" name="customers[0].Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE))" class="custom-control-input" checked="checked" />
 
                         }
                         else
@@ -70,14 +70,14 @@
                     <div class="custom-control custom-radio custom-control-inline ml-4">
                         @if (Model.Gender == Gender.FEMALE)
                         {
-                            <input type="radio" name="customers[0].Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE))" class="custom-control-input" checked />
+                            <input type="radio" name="customers[0].Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" checked="checked" />
 
                         }
                         else
                         {
-                            <input type="radio" name="customers[0].Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE))" class="custom-control-input" />
+                            <input type="radio" name="customers[0].Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" />
                         }
-                        <label class="custom-control-label" for="Gender@(((int)Gender.FEMALE))">Kadın</label>
+                        <label class="custom-control-label" for="Gender@(((int)Gender.FEMALE)+5)">Kadın</label>
                     </div>
                 </div>
             </div>
@@ -170,7 +170,7 @@
                     </select>
                 </div>
                 <div class="form-group col-md-4 text-right mt-5">
-                    <button type="button" onclick="javascript:addCustomer(this)" class="btn btn-primary"><i class="fas fa-plus"></i> Sigortalı Ekle</button>
+                    <button type="button" onclick="javascript:addCustomer(this)" class="btn btn-primary"><i class="fas fa-plus"></i> Bir Sigortalı Daha Ekle</button>
                 </div>
             </div>
         </div>

@@ -23,7 +23,7 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
         public string TCKNo { get; set; }
 
         [Display(Name = "ForeignTCKNo")]
-        [StringLength(20, MinimumLength = 20)]
+        [StringLength(20, MinimumLength = 5)]
         public string ForeignTCKNo { get; set; }
 
         [Display(Name = "PassportNo")]
