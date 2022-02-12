@@ -124,7 +124,7 @@ namespace BupaAcibademProject
                 {
                     errors.Add(new ResultError()
                     {
-                        Code = item.Exception.Message,
+                        Code = item.ErrorMessage,
                         Message = item.ErrorMessage
                     });
                 }

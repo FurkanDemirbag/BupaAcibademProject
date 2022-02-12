@@ -419,3 +419,112 @@ function fillDistricts(e, id) {
         });
     });
 }
+
+function addCustomer(e) {
+    if (!e) {
+        return;
+    }
+
+    var continueCondition = false;
+
+    if ($("#customerForm").valid()) {
+        continueCondition = true;
+    }
+
+    if (continueCondition) {
+        var index = $(e).parents("form").find(".customer").length;
+
+        var lastHtml = $(e).parents(".customer").html();
+        var newCustomer = $("<div>", { class: "customer customer" + index, html: lastHtml });
+
+        $(e).parents(".customer").addClass("d-none");
+
+        $(".customers").before(newCustomer);
+
+        $(".customer" + index).find(":input").each(function () {
+            replaceProductIndex(this, index);
+        });
+
+        addCustomerValidation(".customer" + index);
+
+        $(".customers .table").removeClass("d-none");
+        var tBody = $(".customers .table tbody");
+        $(tBody).append(
+            $("<tr>", { id: "customer" + (index - 1) })
+        );
+
+        var currentTr = $("#customer" + (index - 1));
+        $(currentTr).append($("<td>", { html: $(".customer" + (index - 1)).find("input[name='customers[" + (index - 1) + "].Name']").val() + " " + $(".customer" + (index - 1)).find("input[name='customers[" + (index - 1) + "].Surname']").val() }));
+        $(currentTr).append($("<td>", { html: $(".customer" + (index - 1)).find("input[name='customers[" + (index - 1) + "].TCKNo']").val() }));
+        $(currentTr).append($("<td>", { html: $(".customer" + (index - 1)).find("input[name='customers[" + (index - 1) + "].DateOfBirth']").val() }));
+        $(currentTr).append($("<td>", { html: $(".customer" + (index - 1)).find("select[name='customers[" + (index - 1) + "].ProximityType']").find(":selected").text() }));
+        $(currentTr).append("<td><button type='button' onclick='javascript:deleteCustomer(this)' class='btn btn-sm btn-danger'><i class='fas fa-trash'></i> Sil</button></td>");
+    }
+}
+
+function deleteCustomer(e) {
+    if (!e) {
+        return;
+    }
+    var index = $(e).parents("tr").attr("id").split("customer")[1];
+    $(e).parents("tr").remove();
+    $("#customerForm").find(".customer" + index).remove();
+
+    $("#customerForm").find(".customer").each(function (i, el) {
+        $(el).removeAttr("class");
+        $(el).addClass("customer");
+        $(el).addClass("customer" + i);
+
+        $(el).find(":input").each(function () {
+            replaceProductIndex(this, i);
+        });
+    });
+
+    $(".customers tbody tr").each(function (i, el) {
+        $(el).removeAttr("id");
+        $(el).attr("id", "customer" + i)
+    });
+}
+
+function replaceProductIndex(input, index) {
+    var name = $(input).attr("name");
+    if (name) {
+        name = name.substring(0, name.indexOf("[") + 1) + index + name.substring(name.indexOf("]"));
+        $(input).attr("name", name);
+    }
+    var id = $(input).attr("id");
+    if (id) {
+        if ($(input).attr("type") == "radio") {
+            id = index + id;
+            $(input).attr("id", id);
+            $(input).parent().find("label").attr("for", id);
+        }
+        else {
+            id = id.substring(0, id.indexOf("_") + 1) + index + id.substring(id.indexOf("_", id.indexOf("_") + 1));
+            $(input).attr("id", id);
+            $(input).parent().find("label").attr("for", id);
+        }
+    }
+};
+
+function addCustomerValidation(el) {
+    $(el).find(":input[name$='.InsurerId']").rules("add", { required: true });
+    $(el).find(":input[name$='.TCKNo']").rules("add", { required: true, maxlength: 11, minlength: 11 });
+    $(el).find(":input[name$='.ForeignTCKNo']").rules("add", { maxlength: 20, minlength: 5 });
+    $(el).find(":input[name$='.PassportNo']").rules("add", { maxlength: 7, minlength: 7 });
+    $(el).find(":input[name$='.PhoneNumber']").rules("add", { required: true, maxlength: 10, minlength: 10 });
+    $(el).find(":input[name$='.Email']").rules("add", { required: true, email: true });
+    $(el).find(":input[name$='.Name']").rules("add", { required: true, maxlength: 400, minlength: 2 });
+    $(el).find(":input[name$='.Surname']").rules("add", { required: true, maxlength: 400, minlength: 2 });
+    $(el).find(":input[name$='.ProximityType']").rules("add", { required: true });
+    $(el).find(":input[name$='.Gender']").rules("add", { required: true });
+    $(el).find(":input[name$='.DateOfBirth']").rules("add", { required: true, date: true });
+    $(el).find(":input[name$='.JobId']").rules("add", { required: true, notOnlyZero: '0', messages: { notOnlyZero: "Meslek boş olamaz" } });
+    $(el).find(":input[name$='.CountryId']").rules("add", { required: true, notOnlyZero: '0', messages: { notOnlyZero: "Ülke boş olamaz" } });
+    $(el).find(":input[name$='.NationalityId']").rules("add", { required: true, notOnlyZero: '0', messages: { notOnlyZero: "Uyruk boş olamaz" } });
+    $(el).find(":input[name$='.CityId']").rules("add", { required: true, notOnlyZero: '0', messages: { notOnlyZero: "Şehir boş olamaz" } });
+    $(el).find(":input[name$='.DistrictId']").rules("add", { required: true, notOnlyZero: '0', messages: { notOnlyZero: "İlçe boş olamaz" } });
+    $(el).find(":input[name$='.Height']").rules("add", { required: true, number: true, notOnlyZero: '0', messages: { notOnlyZero: "Boy sıfır olamaz" } });
+    $(el).find(":input[name$='.Weight']").rules("add", { required: true, number: true, notOnlyZero: '0', messages: { notOnlyZero: "Kilo sıfır olamaz" } });
+    $(el).find(":input[name$='.Address']").rules("add", { required: true, maxlength: 400, minlength: 10 });
+}
