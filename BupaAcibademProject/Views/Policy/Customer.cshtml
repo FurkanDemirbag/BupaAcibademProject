@@ -9,33 +9,33 @@
         <h2>Sigortalı Girişi</h2>
     </div>
     <form action="" method="post" id="customerForm">
-        <input type="hidden" name="InsurerId" value="@(Model.InsurerId)" />
+        <input type="hidden" name="customers[0].InsurerId" value="@(Model.InsurerId)" />
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>TC Kimlik No</label>
-                <input type="number" class="form-control" name="TCKNo" maxlength="11" value="@(Model.TCKNo)" placeholder="TC Kimlik NO" />
+                <input type="number" class="form-control" name="customers[0].TCKNo" maxlength="11" value="@(Model.TCKNo)" placeholder="TC Kimlik NO" />
             </div>
             <div class="form-group col-md-4">
                 <label>Yabancı Kimlik No</label>
-                <input type="number" class="form-control" name="ForeignTCKNo" maxlength="20" value="@(Model.ForeignTCKNo)" placeholder="Yabancı Kimlik No" />
+                <input type="number" class="form-control" name="customers[0].ForeignTCKNo" maxlength="20" value="@(Model.ForeignTCKNo)" placeholder="Yabancı Kimlik No" />
             </div>
             <div class="form-group col-md-4">
                 <label>Pasaport No</label>
-                <input type="number" class="form-control" name="PassportNo" maxlength="7" value="@(Model.PassportNo)" placeholder="Pasaport No" />
+                <input type="number" class="form-control" name="customers[0].PassportNo" maxlength="7" value="@(Model.PassportNo)" placeholder="Pasaport No" />
             </div>
         </div>
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>Boy</label>
-                <input type="number" class="form-control" name="Height" value="@(Model.Height)" placeholder="Boy" />
+                <input type="number" class="form-control" name="customers[0].Height" value="@(Model.Height)" placeholder="Boy" />
             </div>
             <div class="form-group col-md-4">
                 <label>Kilo</label>
-                <input type="number" class="form-control" name="Weight" value="@(Model.Weight)" placeholder="Kilo" />
+                <input type="number" class="form-control" name="customers[0].Weight" value="@(Model.Weight)" placeholder="Kilo" />
             </div>
             <div class="form-group col-md-4">
                 <label>Yakınlık</label>
-                <select class="form-control" name="ProximityType">
+                <select class="form-control" name="customers[0].ProximityType">
                     <option value="@((int)ProximityType.HIMSELF)">Kendisi</option>
                     <option value="@((int)ProximityType.WIFE)">Eşi</option>
                     <option value="@((int)ProximityType.CHILDREN)">Çoçuğu</option>
@@ -46,35 +46,35 @@
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>Adı</label>
-                <input type="text" class="form-control" name="Name" maxlength="11" value="@(Model.Name)" placeholder="Ad" />
+                <input type="text" class="form-control" name="customers[0].Name" maxlength="11" value="@(Model.Name)" placeholder="Ad" />
             </div>
             <div class="form-group col-md-4">
                 <label>Soyadı</label>
-                <input type="text" class="form-control" name="Surname" maxlength="20" value="@(Model.Surname)" placeholder="Soyad" />
+                <input type="text" class="form-control" name="customers[0].Surname" maxlength="20" value="@(Model.Surname)" placeholder="Soyad" />
             </div>
             <div class="form-group col-md-4">
                 <label>Cinsiyet</label><br />
                 <div class="custom-control custom-radio custom-control-inline ml-4">
                     @if (Model.Gender == Gender.MALE)
                     {
-                        <input type="radio" asp-for="Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" checked />
+                        <input type="radio" name="customers[0].Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" checked />
 
                     }
                     else
                     {
-                        <input type="radio" asp-for="Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" />
+                        <input type="radio" name="customers[0].Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" />
                     }
                     <label class="custom-control-label" for="Gender@(((int)Gender.MALE)+5)">Erkek</label>
                 </div>
                 <div class="custom-control custom-radio custom-control-inline ml-4">
                     @if (Model.Gender == Gender.FEMALE)
                     {
-                        <input type="radio" asp-for="Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" checked />
+                        <input type="radio" name="customers[0].Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" checked />
 
                     }
                     else
                     {
-                        <input type="radio" asp-for="Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" />
+                        <input type="radio" name="customers[0].Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" />
                     }
                     <label class="custom-control-label" for="Gender@(((int)Gender.FEMALE)+5)">Kadın</label>
                 </div>
@@ -83,21 +83,21 @@
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>Telefon Numarası</label>
-                <input type="number" class="form-control" name="PhoneNumber" maxlength="10" value="@(Model.PhoneNumber)" placeholder="(5**) *** ** **" />
+                <input type="number" class="form-control" name="customers[0].PhoneNumber" maxlength="10" value="@(Model.PhoneNumber)" placeholder="(5**) *** ** **" />
             </div>
             <div class="form-group col-md-4">
                 <label>E-Posta</label>
-                <input type="email" class="form-control" name="Email" value="@(Model.Email)" placeholder="E-Posta" />
+                <input type="email" class="form-control" name="customers[0].Email" value="@(Model.Email)" placeholder="E-Posta" />
             </div>
             <div class="form-group col-md-4">
                 <label>Doğum Tarihi</label>
-                <input type="date" class="form-control" name="DateOfBirth" value="@(Model.DateOfBirth.ToString("dd/MM/yyyy"))" placeholder="GG/AA/YYYY" />
+                <input type="date" class="form-control" name="customers[0].DateOfBirth" value="@(Model.DateOfBirth.ToString("dd/MM/yyyy"))" placeholder="GG/AA/YYYY" />
             </div>
         </div>
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>Ülke</label>
-                <select class="form-control" name="CountryId" onchange="javascript:fillCities(this)">
+                <select class="form-control" name="customers[0].CountryId" onchange="javascript:fillCities(this)">
                     <option value="0">Seçiniz</option>
                     @if (countries != null)
                     {
@@ -117,7 +117,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label>Uyruk</label>
-                <select class="form-control" name="NationalityId">
+                <select class="form-control" name="customers[0].NationalityId">
                     <option value="0">Seçiniz</option>
                     @if (nationalities != null)
                     {
@@ -137,7 +137,7 @@
             </div>
             <div class="form-group col-md-4">
                 <label>Meslek</label>
-                <select class="form-control" name="JobId">
+                <select class="form-control" name="customers[0].JobId">
                     <option value="0">Seçiniz</option>
                     @if (jobs != null)
                     {
@@ -152,19 +152,19 @@
         <div class="form-row row-center">
             <div class="form-group col-md-12">
                 <label>Adres</label>
-                <textarea rows="5" class="form-control" name="Address" value="@(Model.Address)" placeholder="Adres">@(Model.Address != null ? Model.Address : null)</textarea>
+                <textarea rows="5" class="form-control" name="customers[0].Address" value="@(Model.Address)" placeholder="Adres">@(Model.Address != null ? Model.Address : null)</textarea>
             </div>
         </div>
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>İl</label>
-                <select class="form-control" name="CityId" onchange="javascript:fillDistricts(this)">
+                <select class="form-control" name="customers[0].CityId" onchange="javascript:fillDistricts(this)">
                     <option value="0">Seçiniz</option>
                 </select>
             </div>
             <div class="form-group col-md-4">
                 <label>İlçe</label>
-                <select class="form-control" name="DistrictId">
+                <select class="form-control" name="customers[0].DistrictId">
                     <option value="0">Seçiniz</option>
                 </select>
             </div>

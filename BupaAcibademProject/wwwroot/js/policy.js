@@ -123,104 +123,104 @@
 
     $("#customerForm").validate({
         rules: {
-            InsurerId: { required: true},
-            TCKNo: { required: true, maxlength: 11, minlength: 11 },
-            ForeignTCKNo: { maxlength: 20, minlength: 5 },
-            PassportNo: { maxlength: 7, minlength: 7 },
-            PhoneNumber: { required: true, maxlength: 10, minlength: 10 },
-            Email: { required: true, email: true },
-            Name: { required: true, maxlength: 400, minlength: 2 },
-            Surname: { required: true, maxlength: 400, minlength: 2 },
-            ProximityType: { required: true },
-            Gender: { required: true },
-            DateOfBirth: { required: true, date: true },
-            JobId: { required: true, notOnlyZero: '0' },
-            CountryId: { required: true, notOnlyZero: '0' },
-            NationalityId: { required: true, notOnlyZero: '0' },
-            CityId: { required: true, notOnlyZero: '0' },
-            DistrictId: { required: true, notOnlyZero: '0' },
-            Height: { required: true, number: true, notOnlyZero: '0' },
-            Weight: { required: true, number: true, notOnlyZero: '0' },
-            Address: { required: true, maxlength: 400, minlength: 10 }
+            'customers[0].InsurerId': { required: true},
+            'customers[0].TCKNo': { required: true, maxlength: 11, minlength: 11 },
+            'customers[0].ForeignTCKNo': { maxlength: 20, minlength: 5 },
+            'customers[0].PassportNo': { maxlength: 7, minlength: 7 },
+            'customers[0].PhoneNumber': { required: true, maxlength: 10, minlength: 10 },
+            'customers[0].Email': { required: true, email: true },
+            'customers[0].Name': { required: true, maxlength: 400, minlength: 2 },
+            'customers[0].Surname': { required: true, maxlength: 400, minlength: 2 },
+            'customers[0].ProximityType': { required: true },
+            'customers[0].Gender': { required: true },
+            'customers[0].DateOfBirth': { required: true, date: true },
+            'customers[0].JobId': { required: true, notOnlyZero: '0' },
+            'customers[0].CountryId': { required: true, notOnlyZero: '0' },
+            'customers[0].NationalityId': { required: true, notOnlyZero: '0' },
+            'customers[0].CityId': { required: true, notOnlyZero: '0' },
+            'customers[0].DistrictId': { required: true, notOnlyZero: '0' },
+            'customers[0].Height': { required: true, number: true, notOnlyZero: '0' },
+            'customers[0].Weight': { required: true, number: true, notOnlyZero: '0' },
+            'customers[0].Address': { required: true, maxlength: 400, minlength: 10 }
 
         },
         messages: {
-            InsurerId: {
+            'customers[0].InsurerId': {
                 required: "Sigorta ettiren boş olamaz"
             },
-            TCKNo: {
+            'customers[0].TCKNo': {
                 required: "Tc Kimlik No boş olamaz",
                 minlength: "Tc Kimlik No 11 karakter uzunluğunda olmalıdır",
                 maxlength: "Tc Kimlik No 11 karakter uzunluğunda olmalıdır"
             },
-            ForeignTCKNo: {
+            'customers[0].ForeignTCKNo': {
                 minlength: "Yabancı Kimlik No en az 5 karakter uzunluğunda olmalıdır",
                 maxlength: "Yabancı Kimlik No en fazla 20 karakter uzunluğunda olmalıdır"
             },
-            PassportNo: {
+            'customers[0].PassportNo': {
                 minlength: "Pasaport No 7 karakter uzunluğunda olmalıdır",
                 maxlength: "Pasaport No 7 karakter uzunluğunda olmalıdır"
             },
-            PhoneNumber: {
+            'customers[0].PhoneNumber': {
                 required: "Cep telefonu boş olamaz",
                 minlength: "Cep telefonu 10 karakter uzunluğunda olmalıdır",
                 maxlength: "Cep telefonu 10 karakter uzunluğunda olmalıdır"
             },
-            Email: {
+            'customers[0].Email': {
                 required: "E-Posta boş olamaz",
                 email: "Geçerli bir e-posta adresi giriniz"
             },
-            Name: {
+            'customers[0].Name': {
                 required: "Ad boş olamaz",
                 minlength: "Ad minumum 2 karakter uzunluğunda olmalıdır",
                 maxlength: "Ad maximum 400 karakter uzunluğunda olmalıdır"
             },
-            Surname: {
+            'customers[0].Surname': {
                 required: "Soyad boş olamaz",
                 minlength: "Soyad minumum 2 karakter uzunluğunda olmalıdır",
                 maxlength: "Soyad maximum 400 karakter uzunluğunda olmalıdır"
             },
-            ProximityType: {
+            'customers[0].ProximityType': {
                 required: "Yakınlık derecesini seçiniz"
             },
-            Gender: {
+            'customers[0].Gender': {
                 required: "Lütfen cinsiyet seçiniz"
             },
-            DateOfBirth: {
+            'customers[0].DateOfBirth': {
                 required: "Doğum Tarihi boş olamaz",
                 date: "Geçerli bir tarih giriniz"
             },
-            JobId: {
+            'customers[0].JobId': {
                 required: "Lütfen meslek seçiniz",
                 notOnlyZero: "Lütfen meslek seçiniz"
             },
-            CountryId: {
+            'customers[0].CountryId': {
                 required: "Lütfen ülke seçiniz",
                 notOnlyZero: "Lütfen ülke seçiniz"
             },
-            NationalityId: {
+            'customers[0].NationalityId': {
                 required: "Lütfen uyruk seçiniz",
                 notOnlyZero: "Lütfen uyruk seçiniz"
             },
-            CityId: {
+            'customers[0].CityId': {
                 required: "Lütfen il seçiniz",
                 notOnlyZero: "Lütfen il seçiniz"
             },
-            DistrictId: {
+            'customers[0].DistrictId': {
                 required: "Lütfen ilçe seçiniz",
                 notOnlyZero: "Lütfen ilçe seçiniz"
             },
-            Height: {
+            'customers[0].Height': {
                 required: "Boy boş olamaz",
                 number: "Geçerli bir boy giriniz",
                 notOnlyZero: "Boy sıfır olamaz"
             },
-            Weight: {
+            'customers[0].Weight': {
                 required: "Kilo boş olamaz",
                 number: "Geçerli bir kilo giriniz",
                 notOnlyZero: "Kilo sıfır olamaz"
             },
-            Address: {
+            'customers[0].Address': {
                 required: "Adres boş olamaz",
                 minlength: "Adres minumum 10 karakter uzunluğunda olmalıdır",
                 maxlength: "Adres maximum 400 karakter uzunluğunda olmalıdır"
