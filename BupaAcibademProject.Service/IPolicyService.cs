@@ -12,6 +12,8 @@ namespace BupaAcibademProject.Service
 {
     public interface IPolicyService : IScopedService, IServiceBase
     {
+        Task<Result<Insurer>> GetInsurer(int id);
         Task<Result<Insurer>> SaveInsurer(InsurerModel model);
+        Task<Result<List<Customer>>> SaveCustomers(List<CustomerModel> customers);
     }
 }

@@ -18,17 +18,17 @@ namespace BupaAcibademProject
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public bool IsLogined => User != null;
+        public bool IsLogined => Insurer != null;
 
-        public Insurer User
+        public Insurer Insurer
         {
             get
             {
-                return Get<Insurer>("CurrentUser");
+                return Get<Insurer>("CurrentInsurer");
             }
             set
             {
-                Store("CurrentUser", value);
+                Store("CurrentInsurer", value);
             }
         }
 

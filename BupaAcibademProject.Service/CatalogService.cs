@@ -174,5 +174,41 @@ namespace BupaAcibademProject.Service
                 return new Result<List<District>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
             }
         }
+
+        public async Task<Result<List<Job>>> GetJobs()
+        {
+            try
+            {
+                var dr = _dal.ExecuteDrSelectQuery("sp_GetAllJobs", CommandType.StoredProcedure);
+                if (dr.HasRows)
+                {
+                    var jobList = new List<Job>();
+
+                    while (dr.Read())
+                    {
+                        var job = new Job
+                        {
+                            Id = Convert.ToInt32(dr["Id"]),
+                            Name = dr["Name"].ToString(),
+                            CreateDate = Convert.ToDateTime(dr["CreateDate"]),
+                            UpdateDate = Convert.ToDateTime(dr["UpdateDate"])
+                        };
+
+                        jobList.Add(job);
+                    }
+
+                    return new Result<List<Job>>()
+                    {
+                        Data = jobList.ToList()
+                    };
+                }
+
+                return new Result<List<Job>>();
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<Job>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
     }
 }

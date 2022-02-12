@@ -1,10 +1,15 @@
 ﻿@model CustomerModel
-
+@{
+    var countries = ViewBag.Countries as List<Country>;
+    var nationalities = ViewBag.Nationalities as List<Nationality>;
+    var jobs = ViewBag.Jobs as List<Job>;
+}
 <div class="price-form">
     <div class="text-center">
         <h2>Sigortalı Girişi</h2>
     </div>
     <form action="" method="post" id="customerForm">
+        <input type="hidden" name="InsurerId" value="@(Model.InsurerId)" />
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>TC Kimlik No</label>
@@ -41,20 +46,36 @@
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>Adı</label>
-                <input type="number" class="form-control" name="Name" maxlength="11" value="@(Model.Name)" placeholder="Ad" />
+                <input type="text" class="form-control" name="Name" maxlength="11" value="@(Model.Name)" placeholder="Ad" />
             </div>
             <div class="form-group col-md-4">
                 <label>Soyadı</label>
-                <input type="number" class="form-control" name="Surname" maxlength="20" value="@(Model.Surname)" placeholder="Soyad" />
+                <input type="text" class="form-control" name="Surname" maxlength="20" value="@(Model.Surname)" placeholder="Soyad" />
             </div>
             <div class="form-group col-md-4">
                 <label>Cinsiyet</label><br />
                 <div class="custom-control custom-radio custom-control-inline ml-4">
-                    <input type="radio" asp-for="Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" />
+                    @if (Model.Gender == Gender.MALE)
+                    {
+                        <input type="radio" asp-for="Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" checked />
+
+                    }
+                    else
+                    {
+                        <input type="radio" asp-for="Gender" value="@((int)Gender.MALE)" id="Gender@(((int)Gender.MALE)+5)" class="custom-control-input" />
+                    }
                     <label class="custom-control-label" for="Gender@(((int)Gender.MALE)+5)">Erkek</label>
                 </div>
                 <div class="custom-control custom-radio custom-control-inline ml-4">
-                    <input type="radio" asp-for="Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" />
+                    @if (Model.Gender == Gender.FEMALE)
+                    {
+                        <input type="radio" asp-for="Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" checked />
+
+                    }
+                    else
+                    {
+                        <input type="radio" asp-for="Gender" value="@((int)Gender.FEMALE)" id="Gender@(((int)Gender.FEMALE)+5)" class="custom-control-input" />
+                    }
                     <label class="custom-control-label" for="Gender@(((int)Gender.FEMALE)+5)">Kadın</label>
                 </div>
             </div>
@@ -70,39 +91,74 @@
             </div>
             <div class="form-group col-md-4">
                 <label>Doğum Tarihi</label>
-                <input type="date" class="form-control" name="DateOfBirth" value="@(Model.DateOfBirth.ToString("yyyy-MM-dd"))" placeholder="GG/AA/YYYY" />
+                <input type="date" class="form-control" name="DateOfBirth" value="@(Model.DateOfBirth.ToString("dd/MM/yyyy"))" placeholder="GG/AA/YYYY" />
             </div>
         </div>
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>Ülke</label>
-                <select class="form-control" name="CountryId">
+                <select class="form-control" name="CountryId" onchange="javascript:fillCities(this)">
                     <option value="0">Seçiniz</option>
+                    @if (countries != null)
+                    {
+                        foreach (var country in countries)
+                        {
+                            if (Model.CountryId == country.Id)
+                            {
+                                <option value="@(country.Id)" selected>@(country.Name)</option>
+                            }
+                            else
+                            {
+                                <option value="@(country.Id)">@(country.Name)</option>
+                            }
+                        }
+                    }
                 </select>
             </div>
             <div class="form-group col-md-4">
                 <label>Uyruk</label>
                 <select class="form-control" name="NationalityId">
                     <option value="0">Seçiniz</option>
+                    @if (nationalities != null)
+                    {
+                        foreach (var nationality in nationalities)
+                        {
+                            if (Model.NationalityId == nationality.Id)
+                            {
+                                <option value="@(nationality.Id)" selected>@(nationality.Name)</option>
+                            }
+                            else
+                            {
+                                <option value="@(nationality.Id)">@(nationality.Name)</option>
+                            }
+                        }
+                    }
                 </select>
             </div>
             <div class="form-group col-md-4">
                 <label>Meslek</label>
                 <select class="form-control" name="JobId">
                     <option value="0">Seçiniz</option>
+                    @if (jobs != null)
+                    {
+                        foreach (var job in jobs)
+                        {
+                            <option value="@(job.Id)">@(job.Name)</option>
+                        }
+                    }
                 </select>
             </div>
         </div>
         <div class="form-row row-center">
             <div class="form-group col-md-12">
                 <label>Adres</label>
-                <textarea rows="5" class="form-control" name="Address" value="@(Model.Address)" placeholder="Adres"></textarea>
+                <textarea rows="5" class="form-control" name="Address" value="@(Model.Address)" placeholder="Adres">@(Model.Address != null ? Model.Address : null)</textarea>
             </div>
         </div>
         <div class="form-row row-center">
             <div class="form-group col-md-4">
                 <label>İl</label>
-                <select class="form-control" name="CityId">
+                <select class="form-control" name="CityId" onchange="javascript:fillDistricts(this)">
                     <option value="0">Seçiniz</option>
                 </select>
             </div>
@@ -121,3 +177,23 @@
         </div>
     </form>
 </div>
+
+@section scripts{
+    @if (Model.CountryId > 0 && Model.CityId > 0)
+    {
+        <script>
+            $(document).ready(function () {
+                setTimeout(function () {
+                    fillCities(null,@(Model.CountryId));
+                    setTimeout(function () {
+                        $("select[name='CityId']").find("option[value='@(Model.CityId)']").attr("selected", "selected");
+                        fillDistricts(null,@(Model.CityId));
+                        setTimeout(function () {
+                            $("select[name='DistrictId']").find("option[value='@(Model.DistrictId)']").attr("selected", "selected");
+                        },200);
+                    },300);
+                }, 500);
+            });
+        </script>
+    }
+}

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace BupaAcibademProject.Domain.Models.Api
 {
-    public class InsurerResultModel : ApiResult
+    public class CustomerResultModel : ApiResult
     {
-        public Insurer Insurer { get; set; }
+        public List<Customer> Customers { get; set; }
 
-        public InsurerResultModel() : base()
+        public CustomerResultModel() : base()
         {
         }
     }

@@ -10,7 +10,7 @@ namespace BupaAcibademProject.Service
     public interface IUserAccessor
     {
         bool IsLogined { get; }
-        Insurer User { get; set; }
+        Insurer Insurer { get; set; }
         string ClientIP { get; }
         string RequestLink { get; }
         void Store<T>(string key, T data);

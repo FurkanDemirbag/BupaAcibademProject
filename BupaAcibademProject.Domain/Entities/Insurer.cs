@@ -20,7 +20,7 @@ namespace BupaAcibademProject.Domain.Entities
         public string TCKNo { get; set; }
 
         [Display(Name = "Yabancı Kimlik No")]
-        [StringLength(20, MinimumLength = 20)]
+        [StringLength(20, MinimumLength = 5)]
         public string ForeignTCKNo { get; set; }
 
         [Display(Name = "Pasaport No")]

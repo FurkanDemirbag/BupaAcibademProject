@@ -10,6 +10,8 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
 {
     public class InsurerModel
     {
+        public int Id { get; set; }
+
         [Display(Name = "Müşteri Tipi")]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public CustomerType CustomerType { get; set; }
@@ -19,7 +21,7 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
         public string TCKNo { get; set; }
 
         [Display(Name = "ForeignTCKNo")]
-        [StringLength(20, MinimumLength = 20)]
+        [StringLength(20, MinimumLength = 5)]
         public string ForeignTCKNo { get; set; }
 
         [Display(Name = "PassportNo")]
@@ -39,21 +41,17 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
         public string VatNumber { get; set; }
 
         [Display(Name = "Ad")]
-        [Required(ErrorMessage = "{0} boş olamaz")]
         [StringLength(400)]
         public string Name { get; set; }
 
         [Display(Name = "Soyad")]
-        [Required(ErrorMessage = "{0} boş olamaz")]
         [StringLength(400)]
         public string Surname { get; set; }
 
         [Display(Name = "Cinsiyet")]
-        [Required(ErrorMessage = "{0} boş olamaz")]
         public Gender Gender { get; set; }
 
         [Display(Name = "Doğum Tarihi")]
-        [Required(ErrorMessage = "{0} boş olamaz")]
         public DateTime DateOfBirth { get; set; }
 
         [Display(Name = "Telefon Numarası")]
@@ -72,7 +70,6 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
         public int CountryId { get; set; }
 
         [Display(Name = "Nationality Id")]
-        [Required(ErrorMessage = "{0} boş olamaz")]
         public int NationalityId { get; set; }
 
         [Display(Name = "City Id")]

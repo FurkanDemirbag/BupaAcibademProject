@@ -11,6 +11,10 @@ namespace BupaAcibademProject.Domain.Entities
     [Serializable]
     public class Customer : Entity
     {
+        [Display(Name = "Insurer Id")]
+        [Required(ErrorMessage = "{0} boş olamaz")]
+        public int InsurerId { get; set; }
+
         [Display(Name = "Yakınlık Derecesi")]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public ProximityType ProximityType { get; set; }
@@ -90,6 +94,7 @@ namespace BupaAcibademProject.Domain.Entities
         public string Address { get; set; }
 
 
+        public Insurer Insurer { get; set; }
         public Job Job { get; set; }
         public Country Country { get; set; }
         public Nationality Nationality { get; set; }

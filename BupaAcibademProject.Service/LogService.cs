@@ -48,7 +48,7 @@ namespace BupaAcibademProject.Service
                 {
                     TableId = id,
                     TableName = typeof(T).Name,
-                    InsurerId = _userAccessor.User?.Id,
+                    InsurerId = _userAccessor.Insurer?.Id,
                     Changes = null,
                     LogType = Domain.Enums.LogType.DELETE,
                     ClientIP = _userAccessor.ClientIP
@@ -115,7 +115,7 @@ namespace BupaAcibademProject.Service
                         ClientIP = _userAccessor.ClientIP,
                         ErrorMessage = GetErrorMessage(ex, 0),
                         RequestLink = _userAccessor.RequestLink,
-                        UserId = _userAccessor.User != null ? (int?)_userAccessor.User.Id : null
+                        UserId = _userAccessor.Insurer != null ? (int?)_userAccessor.Insurer.Id : null
                     };
 
                     //await _repositoryErrorLog.Add(log);
@@ -198,7 +198,7 @@ namespace BupaAcibademProject.Service
             {
                 TableId = data.Id,
                 TableName = typeof(T).Name,
-                InsurerId = _userAccessor.User?.Id,
+                InsurerId = _userAccessor.Insurer?.Id,
                 Changes = null,
                 LogType = data.Deleted ? Domain.Enums.LogType.DELETE : Domain.Enums.LogType.INSERT,
                 ClientIP = _userAccessor.ClientIP

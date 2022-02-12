@@ -7,6 +7,8 @@
         rules: {
             TCKNo: { required: true, maxlength: 11, minlength: 11 },
             PhoneNumber: { required: true, maxlength: 10, minlength: 10 },
+            ForeignTCKNo: { maxlength: 20, minlength: 5 },
+            PassportNo: { maxlength: 7, minlength: 7 },
             Email: { required: true, email: true },
             Name: { required: true, maxlength: 400, minlength: 2 },
             Surname: { required: true, maxlength: 400, minlength: 2 },
@@ -32,6 +34,14 @@
                 required: "Cep telefonu boş olamaz",
                 minlength: "Cep telefonu 10 karakter uzunluğunda olmalıdır",
                 maxlength: "Cep telefonu 10 karakter uzunluğunda olmalıdır"
+            },
+            ForeignTCKNo: {
+                minlength: "Yabancı Kimlik No en az 5 karakter uzunluğunda olmalıdır",
+                maxlength: "Yabancı Kimlik No en fazla 20 karakter uzunluğunda olmalıdır"
+            },
+            PassportNo: {
+                minlength: "Pasaport No 7 karakter uzunluğunda olmalıdır",
+                maxlength: "Pasaport No 7 karakter uzunluğunda olmalıdır"
             },
             Email: {
                 required: "E-Posta boş olamaz",
@@ -113,7 +123,10 @@
 
     $("#customerForm").validate({
         rules: {
+            InsurerId: { required: true},
             TCKNo: { required: true, maxlength: 11, minlength: 11 },
+            ForeignTCKNo: { maxlength: 20, minlength: 5 },
+            PassportNo: { maxlength: 7, minlength: 7 },
             PhoneNumber: { required: true, maxlength: 10, minlength: 10 },
             Email: { required: true, email: true },
             Name: { required: true, maxlength: 400, minlength: 2 },
@@ -132,10 +145,21 @@
 
         },
         messages: {
+            InsurerId: {
+                required: "Sigorta ettiren boş olamaz"
+            },
             TCKNo: {
                 required: "Tc Kimlik No boş olamaz",
                 minlength: "Tc Kimlik No 11 karakter uzunluğunda olmalıdır",
                 maxlength: "Tc Kimlik No 11 karakter uzunluğunda olmalıdır"
+            },
+            ForeignTCKNo: {
+                minlength: "Yabancı Kimlik No en az 5 karakter uzunluğunda olmalıdır",
+                maxlength: "Yabancı Kimlik No en fazla 20 karakter uzunluğunda olmalıdır"
+            },
+            PassportNo: {
+                minlength: "Pasaport No 7 karakter uzunluğunda olmalıdır",
+                maxlength: "Pasaport No 7 karakter uzunluğunda olmalıdır"
             },
             PhoneNumber: {
                 required: "Cep telefonu boş olamaz",
@@ -205,17 +229,11 @@
     });
 
     bupa.prepareSubmit("#customerForm", function () {
-        bupa.ajaxPost("/Policy/CalculatePhonePolicy", $("#imeiForm"), $("#imeiForm").serialize(), function (result) {
+        bupa.ajaxPost("/Policy/Customer_Save", $("#customerForm"), $("#customerForm").serialize(), function (result) {
             if (result.hasError) {
                 bupa.alert("danger", bupa.resultError(result));
             }
             else {
-                var data = result.data;
-
-                if (history && history.pushState) {
-                    history.pushState({}, document.title, "/teklif-al?id=" + data.refId + "&refToken=" + encodeURIComponent(data.refToken) + "#s2");
-                }
-
                 bupa.goto('/Policy/Offer');
             }
         }, function () {
@@ -332,10 +350,16 @@ function changeCustomerType(item) {
     }
 }
 
-function fillCities(e) {
-    var countryId = $(e).val();
-    if (!countryId) {
+function fillCities(e, id) {
+    if (!id && !e) {
         return;
+    }
+    var countryId = 0;
+    if (id) {
+        countryId = id;
+    }
+    else {
+        countryId = $(e).val();
     }
     bupa.ajaxGet('/Policy/GetCities', 'select[name="CityId"]', { countryId: countryId }, function (res) {
         if (res.hasError) {
@@ -352,10 +376,16 @@ function fillCities(e) {
     });
 }
 
-function fillDistricts(e) {
-    var cityId = $(e).val();
-    if (!cityId) {
+function fillDistricts(e,id) {
+    if (!id && !e) {
         return;
+    }
+    var cityId = 0;
+    if (id) {
+        cityId = id;
+    }
+    else {
+        cityId = $(e).val();
     }
     bupa.ajaxGet('/Policy/GetDistricts', 'select[name="DistrictId"]', { cityId: cityId }, function (res) {
         if (res.hasError) {

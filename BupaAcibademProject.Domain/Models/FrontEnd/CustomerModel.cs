@@ -10,6 +10,10 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
 {
     public class CustomerModel
     {
+        [Display(Name = "Insurer Id")]
+        [Required(ErrorMessage = "{0} boş olamaz")]
+        public int InsurerId { get; set; }
+
         [Display(Name = "Yakınlık Derecesi")]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public ProximityType ProximityType { get; set; }

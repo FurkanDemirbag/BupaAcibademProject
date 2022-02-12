@@ -15,5 +15,6 @@ namespace BupaAcibademProject.Service
         Task<Result<List<Nationality>>> GetNationalities();
         Task<Result<List<City>>> GetCities(int countryId = 0);
         Task<Result<List<District>>> GetDistricts(int cityId = 0);
+        Task<Result<List<Job>>> GetJobs();
     }
 }

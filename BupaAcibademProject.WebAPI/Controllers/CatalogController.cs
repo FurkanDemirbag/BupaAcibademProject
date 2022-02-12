@@ -103,5 +103,26 @@ namespace BupaAcibademProject.WebAPI.Controllers
                 Districts = districtResult.Data
             };
         }
+
+        [HttpGet]
+        [Route("GetJobs")]
+        public async Task<ActionResult<JobModel>> GetJobs()
+        {
+            var jobResult = await _catalogService.GetJobs();
+            if (jobResult.HasError)
+            {
+                return new JobModel()
+                {
+                    ErrorCode = jobResult.Errors.First().Code,
+                    ErrorMessage = jobResult.Errors.First().Message
+                };
+            }
+
+            return new JobModel()
+            {
+                Success = true,
+                Jobs = jobResult.Data
+            };
+        }
     }
 }
