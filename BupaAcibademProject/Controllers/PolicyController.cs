@@ -144,10 +144,35 @@ namespace BupaAcibademProject.Controllers
 
             _userAccessor.Store("CurrentCustomers", customerIds);
 
-            //if (result.Data.Customers)
-            //{
+            if (result.Data.Success && result.Data.Customers != null)
+            {
+                var offerModel = new OfferModel();
+                foreach (var customer in result.Data.Customers)
+                {
+                    if (customer.Offers != null && customer.Offers.Any())
+                    {
+                        var offerNumber = customer.Offers.Select(a => a.OfferNumber).Distinct().First();
+                        if (offerNumber != null)
+                        {
+                            var offerModelResult = GetOffers(offerNumber);
+                            if (offerModelResult != null && offerModelResult.ProductModels != null)
+                            {
+                                foreach (var item in offerModelResult.ProductModels)
+                                {
+                                    offerModel.ProductModels.Add(item);
+                                }
+                            }
 
-            //}
+                            offerModel.OfferNumber = offerNumber;
+                        }
+                    }
+                }
+
+                if (offerModel != null)
+                {
+                    ViewBag.OfferModel = offerModel;
+                }
+            }
 
             return this.SuccesJson();
         }
@@ -176,6 +201,23 @@ namespace BupaAcibademProject.Controllers
         public IActionResult PaymentDone()
         {
             return View();
+        }
+
+        public OfferModel GetOffers(string offerNumber)
+        {
+            var currentUrl = url + "Policy/GetOffers?offerNumber=" + offerNumber;
+
+            var offers = currentUrl.GetRequest();
+            if (offers != null)
+            {
+                var offerResponse = JsonConvert.DeserializeObject<OfferResultModel>(offers);
+                if (offerResponse != null && offerResponse.Success && offerResponse.OfferModel != null)
+                {
+                    return offerResponse.OfferModel;
+                }
+            }
+
+            return null;
         }
 
         public IActionResult GetCities(int countryId)

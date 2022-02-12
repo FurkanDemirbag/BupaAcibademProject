@@ -303,13 +303,64 @@ namespace BupaAcibademProject.Service
                             return new Result<List<Customer>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
                         }
                     }
-                    
                 }
 
                 return new Result<List<Customer>>() { Data = customerList };
             }
 
             return new Result<List<Customer>>();
+        }
+
+        public async Task<Result<ProductModel>> GetOffers(string offerNo)
+        {
+            if (!string.IsNullOrEmpty(offerNo))
+            {
+                try
+                {
+                    var resultModel= new ProductModel();
+
+                    var productModelList = new List<ProductModel>();
+
+                    _dal.AddInputParameter(new SqlParameter("@OfferNumber", offerNo));
+
+                    var dr = _dal.ExecuteDrSelectQuery("sp_GetProductModelsByOfferNumber", CommandType.StoredProcedure);
+                    if (dr.HasRows)
+                    {
+                        while (dr.Read())
+                        {
+                            var model = new ProductModel
+                            {
+                                OfferIds = dr["Id"].ToString(),
+                                ProductId = Convert.ToInt32(dr["ProductId"]),
+                                ProductName = dr["ProductName"].ToString(),
+                                TotalPrice = Convert.ToDecimal(dr["TotalPrice"])
+                            };
+
+                            productModelList.Add(model);
+                        }
+                    }
+
+                    if (productModelList != null)
+                    {
+                        foreach (var item in productModelList)
+                        {
+                            resultModel.TotalPrice += item.TotalPrice;
+                            resultModel.OfferIds += productModelList.IndexOf(item) + 1 == productModelList.Count ? item.OfferIds : item.OfferIds + ",";
+                            resultModel.ProductName = item.ProductName;
+                            resultModel.ProductId = item.ProductId;
+                            //OfferNumber ı kaydetme yanlış customer bazında değil ürün bazında olmalı
+                        }
+                    }
+
+                    return new Result<ProductModel>() { Data = resultModel };
+                }
+                catch (Exception ex)
+                {
+                    return new Result<ProductModel>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+            }
+
+            return new Result<ProductModel>();
         }
 
         private async Task<Result<List<Offer>>> CalculateAndSaveOffer(CustomerModel customer)
@@ -378,7 +429,6 @@ namespace BupaAcibademProject.Service
 
             return new Result<List<Offer>>();
         }
-
         private async Task<Result<Offer>> SaveOffer(Offer offer)
         {
             if (offer != null)
@@ -411,7 +461,6 @@ namespace BupaAcibademProject.Service
 
             return new Result<Offer>();
         }
-
         private async Task<Result<List<Product>>> GetProducts()
         {
             var productList = new List<Product>();
@@ -445,7 +494,6 @@ namespace BupaAcibademProject.Service
                 return new Result<List<Product>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
             }
         }
-
         private BodyMassIndex CalculateBodyMassIndex(decimal weight, decimal height)
         {
             height = height / 100;

@@ -170,5 +170,42 @@ namespace BupaAcibademProject.WebAPI.Controllers
                 Customers = result.Data
             };
         }
+
+        [HttpGet]
+        [Route("GetOffers")]
+        public async Task<ActionResult<OfferResultModel>> GetOffers(string offerNumber)
+        {
+            if (string.IsNullOrEmpty(offerNumber))
+            {
+                return new OfferResultModel()
+                {
+                    ErrorCode = StatusCodes.Status404NotFound.ToString(),
+                    ErrorMessage = "Teklif bulunamadı."
+                };
+            }
+
+            var result = await _policyService.GetOffers(offerNumber);
+            if (result.HasError)
+            {
+                return new OfferResultModel()
+                {
+                    ErrorCode = result.Errors.First().Code,
+                    ErrorMessage = result.Errors.First().Message
+                };
+            }
+
+            return new OfferResultModel()
+            {
+                Success = true,
+                OfferModel = new OfferModel()
+                {
+                    OfferNumber = offerNumber,
+                    ProductModels = new List<ProductModel>()
+                    {
+                        result.Data
+                    }
+                }
+            };
+        }
     }
 }

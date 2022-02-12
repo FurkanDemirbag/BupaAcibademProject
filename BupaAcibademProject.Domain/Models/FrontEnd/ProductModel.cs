@@ -10,7 +10,7 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
 {
     public class ProductModel
     {
-        [Display(Name = "Offer Id")]
+        [Display(Name = "Offer Ids")]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public string OfferIds { get; set; }
 
@@ -18,7 +18,6 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
         public int ProductId { get; set; }
 
         [Display(Name = "Teminat")]
-        [StringLength(11, MinimumLength = 11)]
         public string ProductName { get; set; }
 
         [Display(Name = "Toplam Fiyat")]

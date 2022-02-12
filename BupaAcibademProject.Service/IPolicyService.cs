@@ -17,5 +17,7 @@ namespace BupaAcibademProject.Service
 
         Task<Result<Customer>> GetCustomer(int id);
         Task<Result<List<Customer>>> SaveCustomers(List<CustomerModel> customers);
+
+        Task<Result<ProductModel>> GetOffers(string offerNo);
     }
 }
