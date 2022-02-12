@@ -184,12 +184,12 @@
         <script>
             $(document).ready(function () {
                 setTimeout(function () {
-                    fillCities(null,@(Model.CountryId));
+                    fillCities("select[name='customers[0].CityId']",@(Model.CountryId));
                     setTimeout(function () {
-                        $("select[name='CityId']").find("option[value='@(Model.CityId)']").attr("selected", "selected");
-                        fillDistricts(null,@(Model.CityId));
+                        $("select[name='customers[0].CityId']").find("option[value='@(Model.CityId)']").attr("selected", "selected");
+                        fillDistricts("select[name='customers[0].DistrictId']",@(Model.CityId));
                         setTimeout(function () {
-                            $("select[name='DistrictId']").find("option[value='@(Model.DistrictId)']").attr("selected", "selected");
+                            $("select[name='customers[0].DistrictId']").find("option[value='@(Model.DistrictId)']").attr("selected", "selected");
                         },200);
                     },300);
                 }, 500);

@@ -14,6 +14,8 @@ namespace BupaAcibademProject.Service
     {
         Task<Result<Insurer>> GetInsurer(int id);
         Task<Result<Insurer>> SaveInsurer(InsurerModel model);
+
+        Task<Result<Customer>> GetCustomer(int id);
         Task<Result<List<Customer>>> SaveCustomers(List<CustomerModel> customers);
     }
 }

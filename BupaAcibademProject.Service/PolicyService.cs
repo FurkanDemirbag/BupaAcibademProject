@@ -82,7 +82,6 @@ namespace BupaAcibademProject.Service
 
             return new Result<Insurer>();
         }
-
         public async Task<Result<Insurer>> SaveInsurer(InsurerModel model)
         {
             if (model != null)
@@ -158,6 +157,59 @@ namespace BupaAcibademProject.Service
             return new Result<Insurer>();
         }
 
+        public async Task<Result<Customer>> GetCustomer(int id)
+        {
+            if (id > 0)
+            {
+                try
+                {
+                    var customerResult = default(Customer);
+
+                    _dal.AddInputParameter(new SqlParameter("@Id", id));
+
+                    var dr = _dal.ExecuteDrSelectQuery("sp_GetCustomerById", CommandType.StoredProcedure);
+                    if (dr.HasRows)
+                    {
+                        while (dr.Read())
+                        {
+                            var customer = new Customer
+                            {
+                                Id = Convert.ToInt32(dr["Id"]),
+                                InsurerId = Convert.ToInt32(dr["InsurerId"]),
+                                CountryId = Convert.ToInt32(dr["CountryId"]),
+                                CityId = Convert.ToInt32(dr["CityId"]),
+                                JobId = Convert.ToInt32(dr["JobId"]),
+                                DistrictId = Convert.ToInt32(dr["DistrictId"]),
+                                NationalityId = !string.IsNullOrEmpty(dr["NationalityId"].ToString()) ? Convert.ToInt32(dr["NationalityId"]) : 0,
+                                Name = dr["Name"].ToString(),
+                                Surname = dr["Surname"].ToString(),
+                                Email = dr["Email"].ToString(),
+                                PhoneNumber = dr["PhoneNumber"].ToString(),
+                                Address = dr["Address"].ToString(),
+                                DateOfBirth = Convert.ToDateTime(dr["DateOfBirth"]),
+                                Gender = Convert.ToInt32(dr["Gender"]) == 1 ? Gender.MALE : Gender.FEMALE,
+                                ProximityType = (ProximityType)Convert.ToInt32(dr["ProximityType"]),
+                                TCKNo = dr["TCKNo"].ToString(),
+                                ForeignTCKNo = dr["ForeignTCKNo"].ToString(),
+                                PassportNo = dr["PassportNo"].ToString(),
+                                Height = Convert.ToDecimal(dr["Height"]),
+                                Weight = Convert.ToDecimal(dr["Weight"])
+                            };
+
+                            customerResult = customer;
+                        }
+                    }
+
+                    return new Result<Customer>() { Data = customerResult };
+                }
+                catch (Exception ex)
+                {
+                    return new Result<Customer>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+            }
+
+            return new Result<Customer>();
+        }
         public async Task<Result<List<Customer>>> SaveCustomers(List<CustomerModel> customers)
         {
             if (customers != null)

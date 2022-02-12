@@ -95,6 +95,39 @@ namespace BupaAcibademProject.WebAPI.Controllers
             };
         }
 
+        [HttpGet]
+        [Route("GetCustomer")]
+        public async Task<ActionResult<CustomerResultModel>> GetCustomer(int id)
+        {
+            if (id == 0)
+            {
+                return new CustomerResultModel()
+                {
+                    ErrorCode = StatusCodes.Status404NotFound.ToString(),
+                    ErrorMessage = "Sigortalı bulunamadı."
+                };
+            }
+
+            var result = await _policyService.GetCustomer(id);
+            if (result.HasError)
+            {
+                return new CustomerResultModel()
+                {
+                    ErrorCode = result.Errors.First().Code,
+                    ErrorMessage = result.Errors.First().Message
+                };
+            }
+
+            return new CustomerResultModel()
+            {
+                Success = true,
+                Customers = new List<Customer>()
+                {
+                    result.Data
+                }
+            };
+        }
+
         [HttpPost]
         [Route("SaveCustomers")]
         public async Task<ActionResult<CustomerResultModel>> SaveCustomers([FromBody] List<CustomerModel> model)

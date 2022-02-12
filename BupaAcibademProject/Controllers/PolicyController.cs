@@ -133,7 +133,7 @@ namespace BupaAcibademProject.Controllers
 
             var currentUrl = url + "Policy/SaveCustomers";
 
-            var result = await currentUrl.PostRequest<List<CustomerModel>>(customers);
+            var result = await currentUrl.PostRequest<CustomerResultModel>(customers);
             if (result.HasError)
             {
                 return this.ErrorJson("Sigortalı kaydedilirken hata oluştu.");

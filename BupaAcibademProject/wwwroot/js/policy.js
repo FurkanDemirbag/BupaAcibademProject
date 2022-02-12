@@ -359,6 +359,7 @@ function fillCities(e, id) {
     var countryId = 0;
     if (!e) {
         countryId = id;
+        targetElement = e;
     }
     else {
         countryId = $(e).val();
@@ -393,6 +394,7 @@ function fillDistricts(e, id) {
     var cityId = 0;
     if (id) {
         cityId = id;
+        targetElement = e;
     }
     else {
         cityId = $(e).val();
