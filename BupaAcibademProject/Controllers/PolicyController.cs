@@ -303,9 +303,30 @@ namespace BupaAcibademProject.Controllers
 
             return View(model);
         }
+        public async Task<IActionResult> PayByCreditCard(PaymentModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return this.ErrorJson(ModelState);
+            }
+
+            var currentUrl = url + "Policy/PayByCreditCard";
+
+            var result = await currentUrl.PostRequest<PolicyNumberModel>(model);
+            if (result.HasError)
+            {
+                return this.ErrorJson("Ödeme alınırken hata oluştu.");
+            }
+
+            _userAccessor.Offer.OfferNumber = result.Data.PolicyNumber;
+
+            return this.SuccesJson();
+        }
 
         public IActionResult PaymentDone()
         {
+            ViewBag.PolicyNumber = _userAccessor.Offer.OfferNumber;
+
             return View();
         }
 

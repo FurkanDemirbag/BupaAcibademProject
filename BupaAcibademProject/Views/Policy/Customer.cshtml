@@ -215,8 +215,8 @@
                         fillDistricts("select[name='customers[0].DistrictId']",@(Model.CityId));
                         setTimeout(function () {
                             $("select[name='customers[0].DistrictId']").find("option[value='@(Model.DistrictId)']").attr("selected", "selected");
-                        },200);
-                    },300);
+                        },300);
+                    },400);
                 }, 500);
             });
         </script>

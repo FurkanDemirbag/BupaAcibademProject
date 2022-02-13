@@ -562,6 +562,63 @@ namespace BupaAcibademProject.Service
             }
         }
 
+        public async Task<Result<PolicyNumberModel>> PayByCreditCard(PaymentModel model)
+        {
+            if (model == null)
+            {
+                return new Result<PolicyNumberModel>(StatusCodes.Status404NotFound.ToString(), "Ödeme bilgileri bulunamadı.");
+            }
+
+            try
+            {
+                var validationResult = _validation.Validate(model);
+                if (validationResult.HasError)
+                {
+                    return new Result<PolicyNumberModel>(validationResult);
+                }
+
+                var paymentLog = new PaymentLog()
+                {
+                    InsurerId = model.InsurerId,
+                    PolicyId = model.PolicyId,
+                    CardHolderName = model.CardHolderName,
+                    CardNumber = model.CardNumber,
+                    CVC = model.CVC,
+                    Expiration = model.Expiration
+                };
+
+                var paymentLogResult = SavePaymentLog(paymentLog);
+                if (!paymentLogResult.Result.Data)
+                {
+                    return new Result<PolicyNumberModel>(StatusCodes.Status500InternalServerError.ToString(), "Ödeme alınırken hata oluştu.");
+                }
+
+                var policyDetail = new PolicyDetail()
+                {
+                    PolicyId = model.PolicyId,
+                    PaymentDate = DateTime.Now,
+                    PolicyEndDate = DateTime.Now.AddYears(1),
+                    PolicyStartDate = DateTime.Now
+                };
+
+                var paymentDetailResult = SavePolicyDetail(policyDetail);
+                if (!paymentDetailResult.Result.Data)
+                {
+                    return new Result<PolicyNumberModel>(StatusCodes.Status500InternalServerError.ToString(), "Poliçe detayı oluşturulurken hata oluştu.");
+                }
+
+                var policyNumber = new Random().Next(100000, 1000000).ToString();
+
+                var updatePolicyResult = UpdatePolicy(model.PolicyId, 0, 0, true, policyNumber);
+
+                return new Result<PolicyNumberModel>() { Data = new PolicyNumberModel() { PolicyNumber = policyNumber } };
+            }
+            catch (Exception ex)
+            {
+                return new Result<PolicyNumberModel>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+
         private async Task<Result<Offer>> CalculateAndSaveOffer(Product product, Customer customer, string offerNumber)
         {
             if (customer != null && product != null)
@@ -648,11 +705,11 @@ namespace BupaAcibademProject.Service
 
             return new Result<Offer>();
         }
-        private async Task<Result<Policy>> UpdatePolicy(int policyId, int installmentId, decimal price, bool policyIsDone)
+        private async Task<Result<Policy>> UpdatePolicy(int policyId, int installmentId, decimal price, bool policyIsDone, string policyNumber = null)
         {
-            if (installmentId == 0 || policyId == 0 || price == 0)
+            if (policyId == 0)
             {
-                return new Result<Policy>(StatusCodes.Status404NotFound.ToString(), "Taksit veya poliçe bulunamadı.");
+                return new Result<Policy>(StatusCodes.Status404NotFound.ToString(), "Poliçe bulunamadı.");
             }
 
             try
@@ -661,7 +718,8 @@ namespace BupaAcibademProject.Service
                     new SqlParameter("@Id", policyId),
                     new SqlParameter("@InstallmentId", installmentId),
                     new SqlParameter("@TotalPrice", price),
-                    new SqlParameter("@PolicyIsDone", policyIsDone)
+                    new SqlParameter("@PolicyIsDone", policyIsDone),
+                    new SqlParameter("@PolicyNumber", policyNumber)
                     );
 
                 var offerResult = _dal.ExecuteQuery("sp_UpdatePolicy", CommandType.StoredProcedure);
@@ -672,6 +730,70 @@ namespace BupaAcibademProject.Service
             {
                 return new Result<Policy>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
             }
+        }
+        private async Task<Result<bool>> SavePaymentLog(PaymentLog paymentLog)
+        {
+            if (paymentLog != null)
+            {
+                try
+                {
+                    var validationResult = _validation.Validate(paymentLog);
+                    if (validationResult.HasError)
+                    {
+                        return new Result<bool>(validationResult);
+                    }
+
+                    _dal.AddInputParameter(
+                        new SqlParameter("@InsurerId", paymentLog.InsurerId),
+                        new SqlParameter("@PolicyId", paymentLog.PolicyId),
+                        new SqlParameter("@CVC", paymentLog.CVC),
+                        new SqlParameter("@CardHolderName", paymentLog.CardHolderName),
+                        new SqlParameter("@CardNumber", paymentLog.CardNumber),
+                        new SqlParameter("@Expiration", paymentLog.Expiration)
+                        );
+
+                    var offerResult = _dal.ExecuteQuery("sp_PaymentLogSave", CommandType.StoredProcedure);
+
+                    return new Result<bool>() { Data = true };
+                }
+                catch (Exception ex)
+                {
+                    return new Result<bool>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+            }
+
+            return new Result<bool>();
+        }
+        private async Task<Result<bool>> SavePolicyDetail(PolicyDetail policyDetail)
+        {
+            if (policyDetail != null)
+            {
+                try
+                {
+                    var validationResult = _validation.Validate(policyDetail);
+                    if (validationResult.HasError)
+                    {
+                        return new Result<bool>(validationResult);
+                    }
+
+                    _dal.AddInputParameter(
+                        new SqlParameter("@PolicyId", policyDetail.PolicyId),
+                        new SqlParameter("@PaymentDate", policyDetail.PaymentDate),
+                        new SqlParameter("@PolicyStartDate", policyDetail.PolicyStartDate),
+                        new SqlParameter("@PolicyEndDate", policyDetail.PolicyEndDate)
+                        );
+
+                    var offerResult = _dal.ExecuteQuery("sp_PolicyDetailSave", CommandType.StoredProcedure);
+
+                    return new Result<bool>() { Data = true };
+                }
+                catch (Exception ex)
+                {
+                    return new Result<bool>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+            }
+
+            return new Result<bool>();
         }
         private async Task<Result<List<Product>>> GetProducts()
         {
@@ -726,7 +848,8 @@ namespace BupaAcibademProject.Service
                             OfferIds = dr["OfferIds"].ToString(),
                             InstallmentId = !string.IsNullOrEmpty(dr["InsurerId"].ToString()) ? Convert.ToInt32(dr["InsurerId"]) : 0,
                             TotalPrice = Convert.ToDecimal(dr["TotalPrice"]),
-                            PolicyIsDone = Convert.ToBoolean(dr["PolicyIsDone"])
+                            PolicyIsDone = Convert.ToBoolean(dr["PolicyIsDone"]),
+                            PolicyNumber = dr["PolicyNumber"].ToString(),
                         };
 
                         policyResult = policy;

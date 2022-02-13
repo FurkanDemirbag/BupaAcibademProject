@@ -16,15 +16,6 @@ namespace BupaAcibademProject.Domain.Entities
         [Required(ErrorMessage = "{0} boş olamaz")]
         public int PolicyId { get; set; }
 
-        [Display(Name = "Taksit Sayısı")]
-        [StringLength(40, MinimumLength = 40)]
-        [Required(ErrorMessage = "{0} boş olamaz")]
-        public string Installment { get; set; }
-
-        [Display(Name = "Toplam Fiyat")]
-        [Required(ErrorMessage = "{0} boş olamaz")]
-        public decimal TotalPrice { get; set; }
-
         [Display(Name = "Ödeme Tarihi")]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public DateTime PaymentDate { get; set; }

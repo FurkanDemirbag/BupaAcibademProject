@@ -330,5 +330,45 @@ namespace BupaAcibademProject.WebAPI.Controllers
                 PolicyId = result.Data.PolicyId
             };
         }
+
+        [HttpPost]
+        [Route("PayByCreditCard")]
+        public async Task<ActionResult<PolicyNumberModel>> PayByCreditCard([FromBody] PaymentModel model)
+        {
+            if (model == null)
+            {
+                return new PolicyNumberModel()
+                {
+                    ErrorCode = StatusCodes.Status404NotFound.ToString(),
+                    ErrorMessage = "Sigorta ettiren bulunamadı."
+                };
+            }
+
+            var validationResult = DataAnnotation.ValidateEntity(model);
+            if (validationResult.HasError)
+            {
+                return new PolicyNumberModel()
+                {
+                    ErrorCode = StatusCodes.Status500InternalServerError.ToString(),
+                    ErrorMessage = validationResult.ValidationErrors.First().ErrorMessage
+                };
+            }
+
+            var result = await _policyService.PayByCreditCard(model);
+            if (result.HasError)
+            {
+                return new PolicyNumberModel()
+                {
+                    ErrorCode = result.Errors.First().Code,
+                    ErrorMessage = result.Errors.First().Message
+                };
+            }
+
+            return new PolicyNumberModel()
+            {
+                Success = true,
+                PolicyNumber = result.Data.PolicyNumber
+            };
+        }
     }
 }

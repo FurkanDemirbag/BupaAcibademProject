@@ -28,5 +28,6 @@ namespace BupaAcibademProject.Service
         Task<Result<CalculatedInstallmentModel>> SelectInstallment(int installmentId, int policyId);
         Task<Result<ContinuePolicyModel>> ContinuePolicy(int installmentId, int policyId);
 
+        Task<Result<PolicyNumberModel>> PayByCreditCard(PaymentModel model);
     }
 }

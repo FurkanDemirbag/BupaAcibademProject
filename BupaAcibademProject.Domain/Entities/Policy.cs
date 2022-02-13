@@ -32,6 +32,8 @@ namespace BupaAcibademProject.Domain.Entities
         [Required(ErrorMessage = "{0} boş olamaz")]
         public bool PolicyIsDone { get; set; }
 
+        [Display(Name = "Poliçe Numarası")]
+        public string PolicyNumber { get; set; }
 
         public Insurer Insurer { get; set; }
         public Installment Installment { get; set; }

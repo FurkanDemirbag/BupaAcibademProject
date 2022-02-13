@@ -313,7 +313,7 @@
     }
 
     bupa.prepareSubmit("#paymentForm", function () {
-        bupa.ajaxPost("/Policy/PolicyPayment", $("body"), $("#paymentForm").serialize(), function (result) {
+        bupa.ajaxPost("/Policy/PayByCreditCard", $("body"), $("#paymentForm").serialize(), function (result) {
             if (result.hasError) {
                 bupa.alert("danger", bupa.resultError(result));
             }
@@ -324,21 +324,6 @@
         }, function () {
             bupa.alert("danger", "Beklenmedik bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.");
         });
-    });
-
-    $("#Expiration").change(function () {
-        var value = $(this).val();
-        if (value && value != "") {
-            var parts = value.split("/");
-            if (parts.length >= 2) {
-                $("#ExpirationMonth").val(parts[0].trim());
-                $("#ExpirationYear").val("20" + parts[1].trim());
-            }
-        }
-        else {
-            $("#ExpirationMonth").val("");
-            $("#ExpirationYear").val("");
-        }
     });
 });
 
@@ -500,7 +485,7 @@ function selectInstallment(el) {
         $(targetElement).html(null);
 
         $.each(res.data.list, function (i, e) {
-            $(targetElement).append("<tr><td>" + e.name + "</td><td>" + e.price + "</td></tr>");
+            $(targetElement).append("<tr><td>" + e.name + "</td><td>" + parseFloat(e.price).toFixed(2) + "</td></tr>");
         });
 
         $(targetElement).append("<tr><td></td><td><b>Toplam Prim: " + res.data.totalPrice + " TL</b></td></tr>");

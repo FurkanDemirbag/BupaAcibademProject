@@ -35,6 +35,6 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
 
         [Display(Name = "Son kullanim Tarihi")]
         [Required(ErrorMessage = "{0} boş olamaz.")]
-        public DateTime ExpirationDate { get; set; }
+        public string Expiration { get; set; }
     }
 }

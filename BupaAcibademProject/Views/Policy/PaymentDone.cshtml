@@ -1,9 +1,14 @@
-﻿<div class="price-form">
+﻿@{ 
+    var policyNumber = ViewBag.PolicyNumber as string;
+}
+<div class="price-form">
     <div class="after-payment-div">
         <img class="img-fluid" src="/img/after-payment.png" />
 
         <h3>Poliçeniz Başarıyla Oluşturuldu.</h3>
-
+        <p>
+            Poliçe Numarası : <b>#@(policyNumber)</b>
+        </p>
         <p>
             Poliçenize ait teminatların geçerli olması için anlaşmalı olduğumuz hastanaleri kullanmayı unutmayınız.
         </p>

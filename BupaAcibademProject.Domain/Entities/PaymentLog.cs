@@ -35,7 +35,7 @@ namespace BupaAcibademProject.Domain.Entities
 
         [Display(Name = "Son kullanim Tarihi")]
         [Required(ErrorMessage = "{0} boş olamaz.")]
-        public DateTime Expiration { get; set; }
+        public string Expiration { get; set; }
 
 
         public Insurer Insurer { get; set; }
