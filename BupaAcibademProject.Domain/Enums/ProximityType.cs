@@ -11,6 +11,7 @@ namespace BupaAcibademProject.Domain.Enums
         HIMSELF = 0,
         WIFE = 1,
         CHILDREN = 2,
-        OTHER = 3
+        OTHER = 3, 
+        ALL = 99
     }
 }

@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BupaAcibademProject Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/c843dcc124.js"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="mx-3 my-3 content payment-page">
+        @RenderBody()
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container mt-4">
+            &copy; 2022 - BupaAcibademProject - Admin
+        </div>
+    </footer>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/jquery.maskedinput.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/blockui.min.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/messages_tr.js"></script>
+    <script src="/js/credit-card.js"></script>
+    <script src="/js/site.js" asp-append-version="true"></script>
+    <script src="/js/bupa.js" asp-append-version="true"></script>
+    <script src="/js/policy.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

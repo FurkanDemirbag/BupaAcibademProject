@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace BupaAcibademProject
+namespace BupaAcibademProject.Admin
 {
     public class UserAccessor : IUserAccessor
     {

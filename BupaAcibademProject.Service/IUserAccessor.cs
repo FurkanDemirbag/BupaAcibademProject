@@ -1,4 +1,5 @@
 ﻿using BupaAcibademProject.Domain.Entities;
+using BupaAcibademProject.Domain.Models.Admin;
 using BupaAcibademProject.Domain.Models.FrontEnd;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace BupaAcibademProject.Service
         List<int> CustomerIds { get; set; }
         OfferModel Offer { get; set; }
         int PolicyId { get; set; }
+        List<PolicySummaryModel> PolicySummaryModels { get; set; }
         string ClientIP { get; }
         string RequestLink { get; }
         void Store<T>(string key, T data);

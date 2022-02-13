@@ -14,6 +14,7 @@ using System.Data.SqlClient;
 using BupaAcibademProject.Domain.Models.FrontEnd;
 using BupaAcibademProject.Domain.Enums;
 using BupaAcibademProject.Domain.Models.Api;
+using BupaAcibademProject.Domain.Models.Admin;
 
 namespace BupaAcibademProject.Service
 {
@@ -379,7 +380,6 @@ namespace BupaAcibademProject.Service
             return new Result<ProductModel>();
         }
 
-
         public async Task<Result<Policy>> CreatePolicy(PolicyModel model)
         {
             if (model != null)
@@ -616,6 +616,81 @@ namespace BupaAcibademProject.Service
             catch (Exception ex)
             {
                 return new Result<PolicyNumberModel>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+
+        public async Task<Result<List<PolicySummaryModel>>> GetPolicySummaryModels()
+        {
+            try
+            {
+                var dr = _dal.ExecuteDrSelectQuery("sp_GetAllPolicySummaries", CommandType.StoredProcedure);
+                if (dr.HasRows)
+                {
+                    var summaryList = new List<PolicySummaryModel>();
+
+                    while (dr.Read())
+                    {
+                        var summary = new PolicySummaryModel
+                        {
+                            PolicyId = Convert.ToInt32(dr["PolicyId"]),
+                            InsurerName = dr["InsurerName"].ToString(),
+                            InsurerSurname = dr["InsurerSurname"].ToString(),
+                            ProximityType = (ProximityType)Convert.ToInt32(dr["ProximityType"]),
+                            TC = dr["TC"].ToString(),
+                            Name = dr["Name"].ToString(),
+                            Surname = dr["Surname"].ToString(),
+                            DateOfBirth = Convert.ToDateTime(dr["DateOfBirth"]),
+                            OfferNumber = dr["OfferNumber"].ToString(),
+                            PolicyNumber = dr["PolicyNumber"].ToString(),
+                            ProductName = dr["ProductName"].ToString(),
+                            Installment = Convert.ToInt32(dr["Installment"]),
+                            Price = Convert.ToDecimal(dr["Price"]),
+                            PolicyIsDone = Convert.ToBoolean(dr["PolicyIsDone"]),
+                            PolicyStartDate = Convert.ToBoolean(dr["PolicyIsDone"]) ? Convert.ToDateTime(dr["PolicyStartDate"]) : DateTime.Now,
+                            PolicyEndDate = Convert.ToBoolean(dr["PolicyIsDone"]) ? Convert.ToDateTime(dr["PolicyEndDate"]) : DateTime.Now
+                        };
+
+                        summaryList.Add(summary);
+                    }
+
+                    var list = summaryList.GroupBy(a => a.TC).Select(b => b.First()).ToList();
+
+                    return new Result<List<PolicySummaryModel>>()
+                    {
+                        Data = list
+                    };
+                }
+
+                return new Result<List<PolicySummaryModel>>();
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<PolicySummaryModel>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+
+        public async Task<Result<UpdatePolicyStateResultModel>> UpdatePolicyState(int policyId, bool confirmRequest, bool deleteRequest)
+        {
+            if (policyId == 0)
+            {
+                return new Result<UpdatePolicyStateResultModel>(StatusCodes.Status404NotFound.ToString(), "Poliçe bulunamadı.");
+            }
+
+            try
+            {
+                _dal.AddInputParameter(
+                     new SqlParameter("@Id", policyId),
+                     new SqlParameter("@PolicyIsDone", confirmRequest),
+                     new SqlParameter("@Deleted", deleteRequest)
+                     );
+
+                var offerResult = _dal.ExecuteQuery("sp_UpdatePolicyState", CommandType.StoredProcedure);
+
+                return new Result<UpdatePolicyStateResultModel>();
+            }
+            catch (Exception ex)
+            {
+                return new Result<UpdatePolicyStateResultModel>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
             }
         }
 

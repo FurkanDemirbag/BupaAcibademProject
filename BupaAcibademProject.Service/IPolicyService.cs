@@ -1,5 +1,6 @@
 ﻿using BupaAcibademProject.Domain.Entities;
 using BupaAcibademProject.Domain.Models;
+using BupaAcibademProject.Domain.Models.Admin;
 using BupaAcibademProject.Domain.Models.Api;
 using BupaAcibademProject.Domain.Models.FrontEnd;
 using BupaAcibademProject.Service.Infrastructure;
@@ -29,5 +30,9 @@ namespace BupaAcibademProject.Service
         Task<Result<ContinuePolicyModel>> ContinuePolicy(int installmentId, int policyId);
 
         Task<Result<PolicyNumberModel>> PayByCreditCard(PaymentModel model);
+
+        Task<Result<List<PolicySummaryModel>>> GetPolicySummaryModels();
+
+        Task<Result<UpdatePolicyStateResultModel>> UpdatePolicyState(int policyId, bool confirmRequest, bool deleteRequest);
     }
 }

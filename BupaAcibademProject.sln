@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BupaAcibademProject", "BupaAcibademProject\BupaAcibademProject.csproj", "{3A031370-0392-478E-AF10-958F3D981FAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BupaAcibademProject", "BupaAcibademProject\BupaAcibademProject.csproj", "{3A031370-0392-478E-AF10-958F3D981FAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BupaAcibademProject.DataAccessLayer", "BupaAcibademProject.DataAccessLayer\BupaAcibademProject.DataAccessLayer.csproj", "{DE598224-3D4B-4ED2-94F6-6A664DF0F2AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BupaAcibademProject.DataAccessLayer", "BupaAcibademProject.DataAccessLayer\BupaAcibademProject.DataAccessLayer.csproj", "{DE598224-3D4B-4ED2-94F6-6A664DF0F2AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BupaAcibademProject.Domain", "BupaAcibademProject.Domain\BupaAcibademProject.Domain.csproj", "{3D12AE6F-CAA9-4836-93C8-BC9186F5B965}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BupaAcibademProject.Domain", "BupaAcibademProject.Domain\BupaAcibademProject.Domain.csproj", "{3D12AE6F-CAA9-4836-93C8-BC9186F5B965}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BupaAcibademProject.Service", "BupaAcibademProject.Service\BupaAcibademProject.Service.csproj", "{480A2C66-136D-47FC-A26C-2B5C58BDD730}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BupaAcibademProject.Service", "BupaAcibademProject.Service\BupaAcibademProject.Service.csproj", "{480A2C66-136D-47FC-A26C-2B5C58BDD730}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BupaAcibademProject.WebAPI", "BupaAcibademProject.WebAPI\BupaAcibademProject.WebAPI.csproj", "{7E6AA02D-6DD3-46D8-A8C3-CB44DEE14922}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BupaAcibademProject.WebAPI", "BupaAcibademProject.WebAPI\BupaAcibademProject.WebAPI.csproj", "{7E6AA02D-6DD3-46D8-A8C3-CB44DEE14922}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BupaAcibademProject.Admin", "BupaAcibademProject.Admin\BupaAcibademProject.Admin.csproj", "{471B6B6F-E6EA-46C2-8C2A-0609893C9977}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{7E6AA02D-6DD3-46D8-A8C3-CB44DEE14922}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E6AA02D-6DD3-46D8-A8C3-CB44DEE14922}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E6AA02D-6DD3-46D8-A8C3-CB44DEE14922}.Release|Any CPU.Build.0 = Release|Any CPU
+		{471B6B6F-E6EA-46C2-8C2A-0609893C9977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{471B6B6F-E6EA-46C2-8C2A-0609893C9977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{471B6B6F-E6EA-46C2-8C2A-0609893C9977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{471B6B6F-E6EA-46C2-8C2A-0609893C9977}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

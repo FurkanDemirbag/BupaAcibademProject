@@ -1,4 +1,5 @@
 ﻿using BupaAcibademProject.Domain.Entities;
+using BupaAcibademProject.Domain.Models.Admin;
 using BupaAcibademProject.Domain.Models.FrontEnd;
 using BupaAcibademProject.Service;
 using Microsoft.AspNetCore.Http;
@@ -68,6 +69,19 @@ namespace BupaAcibademProject.WebAPI
                 Store("CurrentPolicy", value);
             }
         }
+
+        public List<PolicySummaryModel> PolicySummaryModels
+        {
+            get
+            {
+                return Get<List<PolicySummaryModel>>("CurrentPolicies");
+            }
+            set
+            {
+                Store("CurrentPolicies", value);
+            }
+        }
+
 
         public string ClientIP
         {

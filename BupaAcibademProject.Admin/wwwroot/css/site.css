@@ -773,7 +773,7 @@ footer {
 
 .content {
     margin-top: 95px;
-    background-color: #b6c0c9;
+    background-color: #819eb9;
     padding-top: 20px;
     padding-bottom: 20px;
     min-height: 60vh;
@@ -826,8 +826,6 @@ a {
 
 .btn {
     color: #ffffff;
-    background-color: #000000;
-    font-size: 18px;
     font-weight: 400;
     text-align: center;
     border-radius: 5px;

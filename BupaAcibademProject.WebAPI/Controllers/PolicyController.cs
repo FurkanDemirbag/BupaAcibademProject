@@ -370,5 +370,57 @@ namespace BupaAcibademProject.WebAPI.Controllers
                 PolicyNumber = result.Data.PolicyNumber
             };
         }
+
+
+        [HttpGet]
+        [Route("GetPolicySummaryModels")]
+        public async Task<ActionResult<PolicySummaryResultModel>> GetPolicySummaryModels()
+        {
+            var policySummaryResult = await _policyService.GetPolicySummaryModels();
+            if (policySummaryResult.HasError)
+            {
+                return new PolicySummaryResultModel()
+                {
+                    ErrorCode = policySummaryResult.Errors.First().Code,
+                    ErrorMessage = policySummaryResult.Errors.First().Message
+                };
+            }
+
+            return new PolicySummaryResultModel()
+            {
+                Success = true,
+                PolicySummaryModels = policySummaryResult.Data
+            };
+        }
+
+        [HttpGet]
+        [Route("UpdatePolicyState")]
+        public async Task<ActionResult<UpdatePolicyStateResultModel>> UpdatePolicyState(int policyId, bool confirmRequest, bool deleteRequest)
+        {
+            if (policyId == 0)
+            {
+                return new UpdatePolicyStateResultModel()
+                {
+                    ErrorCode = StatusCodes.Status404NotFound.ToString(),
+                    ErrorMessage = "Poliçe bulunamadı."
+                };
+            }
+
+            var result = await _policyService.UpdatePolicyState(policyId,confirmRequest, deleteRequest);
+            if (result.HasError)
+            {
+                return new UpdatePolicyStateResultModel()
+                {
+                    ErrorCode = result.Errors.First().Code,
+                    ErrorMessage = result.Errors.First().Message
+                };
+            }
+
+            return new UpdatePolicyStateResultModel()
+            {
+                Success = true,
+                IsSuccess = true
+            };
+        }
     }
 }
