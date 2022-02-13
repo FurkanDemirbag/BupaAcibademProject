@@ -220,6 +220,8 @@ namespace BupaAcibademProject.Controllers
                     return this.ErrorJson("Poliçe kaydedilirken hata oluştu.");
                 }
 
+                _userAccessor.Store("CurrentPolicy", result.Data.Policy.Id);
+
                 return this.SuccesJson();
             }
 
@@ -228,13 +230,40 @@ namespace BupaAcibademProject.Controllers
 
         public IActionResult Installment()
         {
-            if (_userAccessor.Offer != null)
-            {
-                ViewBag.OfferNumber = _userAccessor.Offer.OfferNumber;
-            }
             var model = new InstallmentModel();
 
+            if (_userAccessor.Offer != null)
+            {
+                model.OfferNumber = _userAccessor.Offer.OfferNumber;
+            }
+
+            ViewBag.Installments = GetInstallments();
+
             return View(model);
+        }
+        public IActionResult SelectInstallment(int installmentId)
+        {
+            if (installmentId == 0)
+            {
+                return this.ErrorJson("Seçili taksit bulunamadı.");
+            }
+            if (_userAccessor.PolicyId == 0)
+            {
+                return this.ErrorJson("Seçili poliçe bulunamadı.");
+            }
+
+            var currentUrl = url + "Policy/SelectInstallment?installmentId=" + installmentId + "&policyId=" + _userAccessor.PolicyId;
+            var result = currentUrl.GetRequest();
+            if (result != null)
+            {
+                var installmentResponse = JsonConvert.DeserializeObject<CalculatedInstallmentModel>(result);
+                if (installmentResponse != null && installmentResponse.Success && installmentResponse.Installments != null)
+                {
+                    return this.SuccesJson(new { list = installmentResponse.Installments, totalPrice = installmentResponse.TotalPrice });
+                }
+            }
+
+            return this.ErrorJson("Taskit seçilirken hata oluştu.");
         }
 
         public IActionResult Payment()
@@ -349,6 +378,23 @@ namespace BupaAcibademProject.Controllers
             }
 
             return new List<Job>();
+        }
+
+        private List<Installment> GetInstallments()
+        {
+            var currentUrl = url + "Policy/GetInstallments";
+
+            var installments = currentUrl.GetRequest();
+            if (installments != null)
+            {
+                var installmentResponse = JsonConvert.DeserializeObject<InstallmentResultModel>(installments);
+                if (installmentResponse != null && installmentResponse.Success && installmentResponse.Installments != null)
+                {
+                    return installmentResponse.Installments;
+                }
+            }
+
+            return new List<Installment>();
         }
     }
 }

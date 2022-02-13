@@ -247,5 +247,57 @@ namespace BupaAcibademProject.WebAPI.Controllers
                 Policy = result.Data
             };
         }
+
+        [HttpGet]
+        [Route("GetInstallments")]
+        public async Task<ActionResult<InstallmentResultModel>> GetInstallments()
+        {
+            var installmentResult = await _policyService.GetInstallments();
+            if (installmentResult.HasError)
+            {
+                return new InstallmentResultModel()
+                {
+                    ErrorCode = installmentResult.Errors.First().Code,
+                    ErrorMessage = installmentResult.Errors.First().Message
+                };
+            }
+
+            return new InstallmentResultModel()
+            {
+                Success = true,
+                Installments = installmentResult.Data
+            };
+        }
+
+        [HttpGet]
+        [Route("SelectInstallment")]
+        public async Task<ActionResult<CalculatedInstallmentModel>> SelectInstallment(int installmentId, int policyId)
+        {
+            if (installmentId == 0 || policyId == 0)
+            {
+                return new CalculatedInstallmentModel()
+                {
+                    ErrorCode = StatusCodes.Status404NotFound.ToString(),
+                    ErrorMessage = "Taksit veya poliçe bulunamadı."
+                };
+            }
+
+            var result = await _policyService.SelectInstallment(installmentId, policyId);
+            if (result.HasError)
+            {
+                return new CalculatedInstallmentModel()
+                {
+                    ErrorCode = result.Errors.First().Code,
+                    ErrorMessage = result.Errors.First().Message
+                };
+            }
+
+            return new CalculatedInstallmentModel()
+            {
+                Success = true,
+                Installments = result.Data.Installments,
+                TotalPrice = result.Data.TotalPrice
+            };
+        }
     }
 }

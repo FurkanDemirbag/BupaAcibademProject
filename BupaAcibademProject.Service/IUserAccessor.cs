@@ -14,6 +14,7 @@ namespace BupaAcibademProject.Service
         Insurer Insurer { get; set; }
         List<int> CustomerIds { get; set; }
         OfferModel Offer { get; set; }
+        int PolicyId { get; set; }
         string ClientIP { get; }
         string RequestLink { get; }
         void Store<T>(string key, T data);

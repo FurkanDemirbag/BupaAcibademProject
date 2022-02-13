@@ -57,6 +57,18 @@ namespace BupaAcibademProject
             }
         }
 
+        public int PolicyId
+        {
+            get
+            {
+                return Get<int>("CurrentPolicy");
+            }
+            set
+            {
+                Store("CurrentPolicy", value);
+            }
+        }
+
         public string ClientIP
         {
             get

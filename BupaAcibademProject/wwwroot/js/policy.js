@@ -258,6 +258,18 @@
         });
     });
 
+    $("#installmentForm").validate({
+        rules: {
+            InstallmentId: { required: true, notOnlyZero: '0' }
+        },
+        messages: {
+            InstallmentId: {
+                required: "Taksit boş olamaz",
+                notOnlyZero: "Lütfen taksit seçiniz"
+            }
+        }
+    });
+
     bupa.prepareSubmit("#installmentForm", function () {
         bupa.ajaxPost("/Policy/ContinuePolicy", $("#installmentForm"), $("#installmentForm").serialize(), function (result) {
             if (result.hasError) {
@@ -470,6 +482,29 @@ function deleteCustomerValues(el) {
     else {
         $(el).val(null);
     }
+}
+
+function selectInstallment(el) {
+    if (!el) {
+        return;
+    }
+    var installmentId = $(el).val();
+    var targetElement = $("#installmentTable tbody");
+
+    bupa.ajaxGet('/Policy/SelectInstallment', '#installmentTable', { installmentId: installmentId }, function (res) {
+        if (res.hasError) {
+            bupa.alert('danger', 'Taksitler getirilirken hata oluştu.');
+            return false;
+        }
+
+        $(targetElement).html(null);
+
+        $.each(res.data.list, function (i, e) {
+            $(targetElement).append("<tr><td>" + e.name + "</td><td>" + e.price + "</td></tr>");
+        });
+
+        $(targetElement).append("<tr><td></td><td><b>Toplam Prim: " + res.data.totalPrice + " TL</b></td></tr>");
+    });
 }
 
 function fillCities(e, id) {

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using System.Data.SqlClient;
 using BupaAcibademProject.Domain.Models.FrontEnd;
 using BupaAcibademProject.Domain.Enums;
+using BupaAcibademProject.Domain.Models.Api;
 
 namespace BupaAcibademProject.Service
 {
@@ -216,7 +217,7 @@ namespace BupaAcibademProject.Service
             {
                 var customerList = new List<Customer>()
                 {
-                    
+
                 };
 
                 foreach (var model in customers)
@@ -378,6 +379,160 @@ namespace BupaAcibademProject.Service
             return new Result<ProductModel>();
         }
 
+
+        public async Task<Result<Policy>> CreatePolicy(PolicyModel model)
+        {
+            if (model != null)
+            {
+                try
+                {
+                    var validationResult = _validation.Validate(model);
+                    if (validationResult.HasError)
+                    {
+                        return new Result<Policy>(validationResult);
+                    }
+
+                    _dal.AddInputParameter(
+                        new SqlParameter("@InsurerId", model.InsurerId),
+                        new SqlParameter("@OfferIds", model.OfferIds),
+                        new SqlParameter("@TotalPrice", model.TotalPrice),
+                        new SqlParameter("@PolicyIsDone", model.PolicyIsDone)
+                        );
+
+                    var insertResult = _dal.ExecuteQuery("sp_CreatePolicy", CommandType.StoredProcedure);
+
+                    var policy = default(Policy);
+
+                    _dal.AddInputParameter(
+                        new SqlParameter("@InsurerId", model.InsurerId),
+                        new SqlParameter("@OfferIds", model.OfferIds),
+                        new SqlParameter("@TotalPrice", model.TotalPrice),
+                        new SqlParameter("@PolicyIsDone", model.PolicyIsDone)
+                        );
+
+                    var dr = _dal.ExecuteDrSelectQuery("sp_GetPolicyByParameters", CommandType.StoredProcedure);
+                    if (dr.HasRows)
+                    {
+                        while (dr.Read())
+                        {
+                            var policyResult = new Policy
+                            {
+                                Id = Convert.ToInt32(dr["Id"]),
+                                OfferIds = dr["OfferIds"].ToString(),
+                                TotalPrice = Convert.ToDecimal(dr["TotalPrice"]),
+                                PolicyIsDone = Convert.ToBoolean(dr["PolicyIsDone"])
+                            };
+
+                            policy = policyResult;
+                        }
+                    }
+
+                    return new Result<Policy>() { Data = policy };
+                }
+                catch (Exception ex)
+                {
+                    return new Result<Policy>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+            }
+
+            return new Result<Policy>();
+        }
+
+        public async Task<Result<List<Installment>>> GetInstallments()
+        {
+            try
+            {
+                var dr = _dal.ExecuteDrSelectQuery("sp_GetAllInstallments", CommandType.StoredProcedure);
+                if (dr.HasRows)
+                {
+                    var installmentList = new List<Installment>();
+
+                    while (dr.Read())
+                    {
+                        var installment = new Installment
+                        {
+                            Id = Convert.ToInt32(dr["Id"]),
+                            Name = dr["Name"].ToString(),
+                            InstallmentCount = Convert.ToInt32(dr["InstallmentCount"]),
+                            Rate = Convert.ToDecimal(dr["Rate"]),
+                            CreateDate = Convert.ToDateTime(dr["CreateDate"]),
+                            UpdateDate = Convert.ToDateTime(dr["UpdateDate"])
+                        };
+
+                        installmentList.Add(installment);
+                    }
+
+                    return new Result<List<Installment>>()
+                    {
+                        Data = installmentList.ToList()
+                    };
+                }
+
+                return new Result<List<Installment>>();
+            }
+            catch (Exception ex)
+            {
+                return new Result<List<Installment>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+
+        public async Task<Result<CalculatedInstallmentModel>> SelectInstallment(int installmentId, int policyId)
+        {
+            if (installmentId == 0 || policyId == 0)
+            {
+                return new Result<CalculatedInstallmentModel>(StatusCodes.Status404NotFound.ToString(), "Taksit veya poliçe bulunamadı.");
+            }
+
+            try
+            {
+                var calculatedModel = new CalculatedInstallmentModel()
+                {
+                    Installments = new List<CalculatedModel>()
+                };
+
+                var policyResult = GetPolicy(policyId);
+                var installmentResult = GetInstallment(installmentId);
+
+                if (policyResult.Result.HasError || installmentResult.Result.HasError)
+                {
+                    return new Result<CalculatedInstallmentModel>(StatusCodes.Status500InternalServerError.ToString(), "Poliçe veya taksit çekilirken hata oluştu.");
+                }
+
+                var policy = policyResult.Result.Data;
+                var installment = installmentResult.Result.Data;
+
+                if (installment.InstallmentCount == 1)
+                {
+                    calculatedModel.TotalPrice = policy.TotalPrice;
+                    calculatedModel.Installments.Add(new CalculatedModel()
+                    {
+                        Name = "Peşin",
+                        Price = policy.TotalPrice
+                    });
+                }
+                else
+                {
+                    var price = policy.TotalPrice + ((policy.TotalPrice * installment.Rate) / 100);
+
+                    calculatedModel.TotalPrice = price;
+                    for (int i = 1; i <= installment.InstallmentCount; i++)
+                    {
+                        calculatedModel.Installments.Add(new CalculatedModel()
+                        {
+                            Name = i + ". Taksit Ödemesi",
+                            Price = price / installment.InstallmentCount
+                        });
+                    }
+                }
+
+                return new Result<CalculatedInstallmentModel>() { Data = calculatedModel };
+            }
+            catch (Exception ex)
+            {
+                return new Result<CalculatedInstallmentModel>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+
         private async Task<Result<Offer>> CalculateAndSaveOffer(Product product, Customer customer, string offerNumber)
         {
             if (customer != null && product != null)
@@ -497,6 +652,72 @@ namespace BupaAcibademProject.Service
                 return new Result<List<Product>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
             }
         }
+        private async Task<Result<Policy>> GetPolicy(int policyId)
+        {
+            try
+            {
+                var policyResult = default(Policy);
+
+                _dal.AddInputParameter(new SqlParameter("@Id", policyId));
+
+                var dr = _dal.ExecuteDrSelectQuery("sp_GetPolicyById", CommandType.StoredProcedure);
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        var policy = new Policy
+                        {
+                            Id = Convert.ToInt32(dr["Id"]),
+                            InsurerId = Convert.ToInt32(dr["InsurerId"]),
+                            OfferIds = dr["OfferIds"].ToString(),
+                            InstallmentId = !string.IsNullOrEmpty(dr["InsurerId"].ToString()) ? Convert.ToInt32(dr["InsurerId"]) : 0,
+                            TotalPrice = Convert.ToDecimal(dr["TotalPrice"]),
+                            PolicyIsDone = Convert.ToBoolean(dr["PolicyIsDone"])
+                        };
+
+                        policyResult = policy;
+                    }
+                }
+
+                return new Result<Policy>() { Data = policyResult };
+            }
+            catch (Exception ex)
+            {
+                return new Result<Policy>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+        private async Task<Result<Installment>> GetInstallment(int installmentId)
+        {
+            try
+            {
+                var installmentResult = default(Installment);
+
+                _dal.AddInputParameter(new SqlParameter("@Id", installmentId));
+
+                var dr = _dal.ExecuteDrSelectQuery("sp_GetInstallmentById", CommandType.StoredProcedure);
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        var installment = new Installment
+                        {
+                            Id = Convert.ToInt32(dr["Id"]),
+                            Name = dr["Name"].ToString(),
+                            InstallmentCount = Convert.ToInt32(dr["InstallmentCount"]),
+                            Rate = Convert.ToDecimal(dr["Rate"])
+                        };
+
+                        installmentResult = installment;
+                    }
+                }
+
+                return new Result<Installment>() { Data = installmentResult };
+            }
+            catch (Exception ex)
+            {
+                return new Result<Installment>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
         private BodyMassIndex CalculateBodyMassIndex(decimal weight, decimal height)
         {
             height = height / 100;
@@ -516,64 +737,6 @@ namespace BupaAcibademProject.Service
             }
 
             return BodyMassIndex.OBESE;
-        }
-
-        public async Task<Result<Policy>> CreatePolicy(PolicyModel model)
-        {
-            if (model != null)
-            {
-                try
-                {
-                    var validationResult = _validation.Validate(model);
-                    if (validationResult.HasError)
-                    {
-                        return new Result<Policy>(validationResult);
-                    }
-
-                    _dal.AddInputParameter(
-                        new SqlParameter("@InsurerId", model.InsurerId),
-                        new SqlParameter("@OfferIds", model.OfferIds),
-                        new SqlParameter("@TotalPrice", model.TotalPrice),
-                        new SqlParameter("@PolicyIsDone", model.PolicyIsDone)
-                        );
-
-                    var insertResult = _dal.ExecuteQuery("sp_CreatePolicy", CommandType.StoredProcedure);
-
-                    var policy = default(Policy);
-
-                    _dal.AddInputParameter(
-                        new SqlParameter("@InsurerId", model.InsurerId),
-                        new SqlParameter("@OfferIds", model.OfferIds),
-                        new SqlParameter("@TotalPrice", model.TotalPrice),
-                        new SqlParameter("@PolicyIsDone", model.PolicyIsDone)
-                        );
-
-                    var dr = _dal.ExecuteDrSelectQuery("sp_GetPolicyByParameters", CommandType.StoredProcedure);
-                    if (dr.HasRows)
-                    {
-                        while (dr.Read())
-                        {
-                            var policyResult = new Policy
-                            {
-                                Id = Convert.ToInt32(dr["Id"]),
-                                OfferIds = dr["OfferIds"].ToString(),
-                                TotalPrice = Convert.ToDecimal(dr["TotalPrice"]),
-                                PolicyIsDone = Convert.ToBoolean(dr["PolicyIsDone"])
-                            };
-
-                            policy = policyResult;
-                        }
-                    }
-
-                    return new Result<Policy>() { Data = policy };
-                }
-                catch (Exception ex)
-                {
-                    return new Result<Policy>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
-                }
-            }
-
-            return new Result<Policy>();
         }
     }
 }

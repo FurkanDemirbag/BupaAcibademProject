@@ -1,4 +1,5 @@
-﻿using BupaAcibademProject.Domain.Enums;
+﻿using BupaAcibademProject.Domain.Entities;
+using BupaAcibademProject.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,14 +15,7 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
         [StringLength(11, MinimumLength = 11)]
         public string OfferNumber { get; set; }
 
-        [Display(Name = "Ödeme Planı")]
-        public int InstallmentId { get; set; }
-
         [Display(Name = "Ödemeler")]
-        public Dictionary<string, decimal> Installments { get; set; }
-
-        [Display(Name = "Toplam Prim")]
-        public decimal TotalPrice { get; set; }
-
+        public List<Installment> Installments { get; set; }
     }
 }

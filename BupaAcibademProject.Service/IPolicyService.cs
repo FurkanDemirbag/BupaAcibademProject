@@ -1,5 +1,6 @@
 ﻿using BupaAcibademProject.Domain.Entities;
 using BupaAcibademProject.Domain.Models;
+using BupaAcibademProject.Domain.Models.Api;
 using BupaAcibademProject.Domain.Models.FrontEnd;
 using BupaAcibademProject.Service.Infrastructure;
 using System;
@@ -21,5 +22,9 @@ namespace BupaAcibademProject.Service
         Task<Result<ProductModel>> GetOffers(string offerNo);
 
         Task<Result<Policy>> CreatePolicy(PolicyModel model);
+
+        Task<Result<List<Installment>>> GetInstallments();
+
+        Task<Result<CalculatedInstallmentModel>> SelectInstallment(int installmentId, int policyId);
     }
 }
