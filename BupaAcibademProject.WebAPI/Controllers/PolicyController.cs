@@ -207,5 +207,45 @@ namespace BupaAcibademProject.WebAPI.Controllers
                 }
             };
         }
+
+        [HttpPost]
+        [Route("CreatePolicy")]
+        public async Task<ActionResult<PolicyResultModel>> CreatePolicy([FromBody] PolicyModel model)
+        {
+            if (model == null)
+            {
+                return new PolicyResultModel()
+                {
+                    ErrorCode = StatusCodes.Status404NotFound.ToString(),
+                    ErrorMessage = "Poliçe bulunamadı."
+                };
+            }
+
+            var validationResult = DataAnnotation.ValidateEntity(model);
+            if (validationResult.HasError)
+            {
+                return new PolicyResultModel()
+                {
+                    ErrorCode = StatusCodes.Status500InternalServerError.ToString(),
+                    ErrorMessage = validationResult.ValidationErrors.First().ErrorMessage
+                };
+            }
+
+            var result = await _policyService.CreatePolicy(model);
+            if (result.HasError)
+            {
+                return new PolicyResultModel()
+                {
+                    ErrorCode = result.Errors.First().Code,
+                    ErrorMessage = result.Errors.First().Message
+                };
+            }
+
+            return new PolicyResultModel()
+            {
+                Success = true,
+                Policy = result.Data
+            };
+        }
     }
 }

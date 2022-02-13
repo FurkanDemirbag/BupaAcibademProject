@@ -101,11 +101,11 @@ namespace BupaAcibademProject.Domain.Entities
         public City City { get; set; }
         public District District { get; set; }
 
-        public List<Policy> Policies { get; set; }
         public List<Offer> Offers { get; set; }
 
         public Customer() : base()
         {
+            Offers = new List<Offer>();
         }
     }
 }

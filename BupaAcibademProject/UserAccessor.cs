@@ -1,4 +1,5 @@
 ﻿using BupaAcibademProject.Domain.Entities;
+using BupaAcibademProject.Domain.Models.FrontEnd;
 using BupaAcibademProject.Service;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -41,6 +42,18 @@ namespace BupaAcibademProject
             set
             {
                 Store("CurrentCustomers", value);
+            }
+        }
+
+        public OfferModel Offer
+        {
+            get
+            {
+                return Get<OfferModel>("CurrentOffer");
+            }
+            set
+            {
+                Store("CurrentOffer", value);
             }
         }
 

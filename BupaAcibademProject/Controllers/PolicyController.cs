@@ -151,26 +151,32 @@ namespace BupaAcibademProject.Controllers
                 {
                     if (customer.Offers != null && customer.Offers.Any())
                     {
-                        var offerNumber = customer.Offers.Select(a => a.OfferNumber).Distinct().First();
-                        if (offerNumber != null)
+                        var offerNumbers = customer.Offers.Select(a => a.OfferNumber);
+                        if (offerNumbers != null)
                         {
-                            var offerModelResult = GetOffers(offerNumber);
-                            if (offerModelResult != null && offerModelResult.ProductModels != null)
+                            foreach (var offerNumber in offerNumbers)
                             {
-                                foreach (var item in offerModelResult.ProductModels)
+                                var offerModelResult = GetOffers(offerNumber);
+                                if (offerModelResult != null && offerModelResult.ProductModels != null)
                                 {
-                                    offerModel.ProductModels.Add(item);
+                                    foreach (var item in offerModelResult.ProductModels)
+                                    {
+                                        if (offerModel.ProductModels != null && !offerModel.ProductModels.Any(a => a.OfferIds == item.OfferIds && a.ProductId == item.ProductId && a.TotalPrice == item.TotalPrice))
+                                        {
+                                            offerModel.ProductModels.Add(item);
+                                        }
+                                    }
                                 }
-                            }
 
-                            offerModel.OfferNumber = offerNumber;
+                                offerModel.OfferNumber = offerNumber;
+                            }
                         }
                     }
                 }
 
                 if (offerModel != null)
                 {
-                    ViewBag.OfferModel = offerModel;
+                    _userAccessor.Store("CurrentOffer", offerModel);
                 }
             }
 
@@ -181,11 +187,51 @@ namespace BupaAcibademProject.Controllers
         {
             var model = new OfferModel();
 
+            if (_userAccessor.Offer != null)
+            {
+                model = _userAccessor.Offer;
+            }
+
             return View(model);
+        }
+        public async Task<IActionResult> CreatePolicy(string offerIds)
+        {
+            if (string.IsNullOrEmpty(offerIds))
+            {
+                return this.ErrorJson("Seçili teklif bulunamadı.");
+            }
+
+            var selectedOffer = _userAccessor.Offer.ProductModels.FirstOrDefault(a => a.OfferIds == offerIds);
+            if (selectedOffer != null)
+            {
+                var policyModel = new PolicyModel()
+                {
+                    OfferIds = selectedOffer.OfferIds,
+                    InsurerId = _userAccessor.Insurer.Id,
+                    PolicyIsDone = false,
+                    TotalPrice = selectedOffer.TotalPrice
+                };
+
+                var currentUrl = url + "Policy/CreatePolicy";
+
+                var result = await currentUrl.PostRequest<PolicyResultModel>(policyModel);
+                if (result.HasError)
+                {
+                    return this.ErrorJson("Poliçe kaydedilirken hata oluştu.");
+                }
+
+                return this.SuccesJson();
+            }
+
+            return this.ErrorJson("Poliçe kaydedilirken hata oluştu.");
         }
 
         public IActionResult Installment()
         {
+            if (_userAccessor.Offer != null)
+            {
+                ViewBag.OfferNumber = _userAccessor.Offer.OfferNumber;
+            }
             var model = new InstallmentModel();
 
             return View(model);

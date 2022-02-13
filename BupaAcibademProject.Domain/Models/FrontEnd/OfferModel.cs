@@ -16,5 +16,10 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
 
         [Display(Name = "Teminatlar")]
         public List<ProductModel> ProductModels { get; set; }
+
+        public OfferModel()
+        {
+            ProductModels = new List<ProductModel>();
+        }
     }
 }

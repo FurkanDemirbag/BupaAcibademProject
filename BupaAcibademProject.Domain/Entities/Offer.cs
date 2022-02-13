@@ -36,7 +36,6 @@ namespace BupaAcibademProject.Domain.Entities
 
         public Product Product { get; set; }
         public Customer Customer { get; set; }
-        public List<Policy> Policies { get; set; }
 
         public Offer(): base()
         {

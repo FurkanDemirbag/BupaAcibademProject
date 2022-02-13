@@ -28,8 +28,8 @@
                             <td>@(product.ProductName)</td>
                             <td>
                                 <div class="custom-control custom-radio custom-control-inline ml-4">
-                                    <input type="radio" asp-for="ProductModels[i].OfferIds" value="@(product.OfferIds)" id="Offer-@(product.OfferIds)" class="custom-control-input" />
-                                    <label class="custom-control-label" for="Offer-@(product.OfferIds)">@(string.Format("{0:N2} TL", product.TotalPrice))</label>
+                                    <input type="radio" name="offerIds" value="@(product.OfferIds)" id="Offer-@(i)" class="custom-control-input" />
+                                    <label class="custom-control-label" for="Offer-@(i)">@(string.Format("{0:N2} TL", product.TotalPrice))</label>
                                 </div>
                             </td>
                         </tr>
@@ -38,6 +38,11 @@
                 }
             </tbody>
         </table>
+        <div class="form-row row-center" style="background-color: #92bce9!important;">
+            <div class="form-group col-md-12 text-center">
+                <label>Yukarıda hesaplanmış primler Vucüt Kitle Endeksi ve Yaş faktörlerine göre hesaplanmıştır. Bilgilerinize sunarız.</label>
+            </div>
+        </div>
         <div class="btn-div mt-2">
             <button type="submit" class="btn"><i class="fas fa-arrow-right"></i> İLERİ</button>
         </div>

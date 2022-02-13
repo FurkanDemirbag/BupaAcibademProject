@@ -242,17 +242,15 @@
     });
 
     bupa.prepareSubmit("#offerForm", function () {
-        bupa.ajaxPost("/Policy/CalculatePhonePolicy", $("#imeiForm"), $("#imeiForm").serialize(), function (result) {
+        var offerIds = $("input[name='offerIds']:checked").val();
+        if (!offerIds) {
+            return;
+        }
+        bupa.ajaxPost("/Policy/CreatePolicy", $("#offerForm"), { offerIds: offerIds }, function (result) {
             if (result.hasError) {
                 bupa.alert("danger", bupa.resultError(result));
             }
             else {
-                var data = result.data;
-
-                if (history && history.pushState) {
-                    history.pushState({}, document.title, "/teklif-al?id=" + data.refId + "&refToken=" + encodeURIComponent(data.refToken) + "#s2");
-                }
-
                 bupa.goto('/Policy/Installment');
             }
         }, function () {
@@ -261,17 +259,11 @@
     });
 
     bupa.prepareSubmit("#installmentForm", function () {
-        bupa.ajaxPost("/Policy/CalculatePhonePolicy", $("#imeiForm"), $("#imeiForm").serialize(), function (result) {
+        bupa.ajaxPost("/Policy/ContinuePolicy", $("#installmentForm"), $("#installmentForm").serialize(), function (result) {
             if (result.hasError) {
                 bupa.alert("danger", bupa.resultError(result));
             }
             else {
-                var data = result.data;
-
-                if (history && history.pushState) {
-                    history.pushState({}, document.title, "/teklif-al?id=" + data.refId + "&refToken=" + encodeURIComponent(data.refToken) + "#s2");
-                }
-
                 bupa.goto('/Policy/Payment');
             }
         }, function () {
@@ -309,12 +301,11 @@
     }
 
     bupa.prepareSubmit("#paymentForm", function () {
-        bupa.ajaxPost("/Policy/CreatePhonePolicy", $("body"), $("#paymentForm").serialize(), function (result) {
+        bupa.ajaxPost("/Policy/PolicyPayment", $("body"), $("#paymentForm").serialize(), function (result) {
             if (result.hasError) {
                 bupa.alert("danger", bupa.resultError(result));
             }
             else {
-                var data = result.data;
                 bupa.showMask("body", "Ödeme işlemi başarılı. <br /> Yönlendiriliyorsunuz. Lütfen bekleyiniz...");
                 bupa.goto('/Policy/PaymentDone');
             }
@@ -348,76 +339,6 @@ function changeCustomerType(item) {
         $(".companyArea").removeClass("d-none");
         $(".customerArea").addClass("d-none");
     }
-}
-
-function fillCities(e, id) {
-    if (!id && !e) {
-        return;
-    }
-
-    var targetElement = "";
-    var countryId = 0;
-    if (!e) {
-        countryId = id;
-        targetElement = e;
-    }
-    else {
-        countryId = $(e).val();
-        if ($(e).attr("name").split(".").length > 1) {
-            targetElement = "select[name='" + $(e).attr("name").split(".")[0] + ".CityId" + "']";
-        }
-        else {
-            targetElement = 'select[name="CityId"]';
-        }
-    }
-    bupa.ajaxGet('/Policy/GetCities', targetElement, { countryId: countryId }, function (res) {
-        if (res.hasError) {
-            bupa.alert('danger', 'Şehirler çekilirken hata oluştu.');
-            return false;
-        }
-
-        $(targetElement).html(null);
-        $(targetElement).append($("<option>", { value: "0", text: "Seçiniz" }));
-
-        $.each(res.data, function (i, e) {
-            $(targetElement).append($("<option>", { value: e.id, text: e.name }));
-        });
-    });
-}
-
-function fillDistricts(e, id) {
-    if (!id && !e) {
-        return;
-    }
-
-    var targetElement = "";
-    var cityId = 0;
-    if (id) {
-        cityId = id;
-        targetElement = e;
-    }
-    else {
-        cityId = $(e).val();
-        if ($(e).attr("name").split(".").length > 1) {
-            targetElement = "select[name='" + $(e).attr("name").split(".")[0] + ".DistrictId" + "']";
-        }
-        else {
-            targetElement = 'select[name="DistrictId"]';
-        }
-    }
-    bupa.ajaxGet('/Policy/GetDistricts', targetElement, { cityId: cityId }, function (res) {
-        if (res.hasError) {
-            bupa.alert('danger', 'İlçeler çekilirken hata oluştu.');
-            return false;
-        }
-
-        $(targetElement).html(null);
-        $(targetElement).append($("<option>", { value: "0", text: "Seçiniz" }));
-
-        $.each(res.data, function (i, e) {
-            $(targetElement).append($("<option>", { value: e.id, text: e.name }));
-        });
-    });
 }
 
 function addCustomer(e) {
@@ -541,7 +462,7 @@ function deleteCustomerValues(el) {
     if ($(el).hasClass("custom-control-input")) {
         $(el).removeAttr("checked");
     }
-    else if ($(el).parent().find("[name$='.ProximityType']").length > 0 || $(el).parent().find("[name$='.CountryId']").length > 0 || $(el).parent().find("[name$='.NationalityId']").length > 0 || $(el).parent().find("[name$='.JobId']").length > 0 || $(el).parent().find("[name$='.CityId']").length > 0 || $(el).parent().find("[name$='.DistrictId']").length > 0 ) {
+    else if ($(el).parent().find("[name$='.ProximityType']").length > 0 || $(el).parent().find("[name$='.CountryId']").length > 0 || $(el).parent().find("[name$='.NationalityId']").length > 0 || $(el).parent().find("[name$='.JobId']").length > 0 || $(el).parent().find("[name$='.CityId']").length > 0 || $(el).parent().find("[name$='.DistrictId']").length > 0) {
         $(el).find("option").each(function () {
             $(this).removeAttr("selected");
         });
@@ -549,4 +470,74 @@ function deleteCustomerValues(el) {
     else {
         $(el).val(null);
     }
+}
+
+function fillCities(e, id) {
+    if (!id && !e) {
+        return;
+    }
+
+    var targetElement = "";
+    var countryId = 0;
+    if (!e) {
+        countryId = id;
+        targetElement = e;
+    }
+    else {
+        countryId = $(e).val();
+        if ($(e).attr("name").split(".").length > 1) {
+            targetElement = "select[name='" + $(e).attr("name").split(".")[0] + ".CityId" + "']";
+        }
+        else {
+            targetElement = 'select[name="CityId"]';
+        }
+    }
+    bupa.ajaxGet('/Policy/GetCities', targetElement, { countryId: countryId }, function (res) {
+        if (res.hasError) {
+            bupa.alert('danger', 'Şehirler çekilirken hata oluştu.');
+            return false;
+        }
+
+        $(targetElement).html(null);
+        $(targetElement).append($("<option>", { value: "0", text: "Seçiniz" }));
+
+        $.each(res.data, function (i, e) {
+            $(targetElement).append($("<option>", { value: e.id, text: e.name }));
+        });
+    });
+}
+
+function fillDistricts(e, id) {
+    if (!id && !e) {
+        return;
+    }
+
+    var targetElement = "";
+    var cityId = 0;
+    if (id) {
+        cityId = id;
+        targetElement = e;
+    }
+    else {
+        cityId = $(e).val();
+        if ($(e).attr("name").split(".").length > 1) {
+            targetElement = "select[name='" + $(e).attr("name").split(".")[0] + ".DistrictId" + "']";
+        }
+        else {
+            targetElement = 'select[name="DistrictId"]';
+        }
+    }
+    bupa.ajaxGet('/Policy/GetDistricts', targetElement, { cityId: cityId }, function (res) {
+        if (res.hasError) {
+            bupa.alert('danger', 'İlçeler çekilirken hata oluştu.');
+            return false;
+        }
+
+        $(targetElement).html(null);
+        $(targetElement).append($("<option>", { value: "0", text: "Seçiniz" }));
+
+        $.each(res.data, function (i, e) {
+            $(targetElement).append($("<option>", { value: e.id, text: e.name }));
+        });
+    });
 }

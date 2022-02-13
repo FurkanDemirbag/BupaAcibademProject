@@ -214,7 +214,10 @@ namespace BupaAcibademProject.Service
         {
             if (customers != null)
             {
-                var customerList = new List<Customer>();
+                var customerList = new List<Customer>()
+                {
+                    
+                };
 
                 foreach (var model in customers)
                 {
@@ -285,22 +288,35 @@ namespace BupaAcibademProject.Service
                     }
                 }
 
-                foreach (var item in customerList)
+                var productList = GetProducts();
+                if (!productList.Result.HasError && productList.Result.Data != null)
                 {
-                    var currentCustomer = customers.FirstOrDefault(a => a.DateOfBirth == item.DateOfBirth && a.TCKNo == item.TCKNo && a.PhoneNumber == item.PhoneNumber);
-                    if (currentCustomer != null)
+                    foreach (var product in productList.Result.Data)
                     {
-                        try
+                        var offerNumber = new Random().Next(100000, 1000000).ToString();
+
+                        foreach (var item in customerList)
                         {
-                            var offerResult = CalculateAndSaveOffer(currentCustomer);
-                            if (!offerResult.Result.HasError && offerResult.Result.Data != null)
+                            var currentCustomer = customers.FirstOrDefault(a => a.DateOfBirth == item.DateOfBirth && a.TCKNo == item.TCKNo && a.PhoneNumber == item.PhoneNumber);
+                            if (currentCustomer != null)
                             {
-                                item.Offers = offerResult.Result.Data;
+                                item.DateOfBirth = currentCustomer.DateOfBirth;
+                                item.Weight = currentCustomer.Weight;
+                                item.Height = currentCustomer.Height;
+
+                                try
+                                {
+                                    var offerResult = CalculateAndSaveOffer(product, item, offerNumber);
+                                    if (!offerResult.Result.HasError && offerResult.Result.Data != null)
+                                    {
+                                        item.Offers.Add(offerResult.Result.Data);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    return new Result<List<Customer>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                                }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            return new Result<List<Customer>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
                         }
                     }
                 }
@@ -317,7 +333,7 @@ namespace BupaAcibademProject.Service
             {
                 try
                 {
-                    var resultModel= new ProductModel();
+                    var resultModel = new ProductModel();
 
                     var productModelList = new List<ProductModel>();
 
@@ -348,7 +364,6 @@ namespace BupaAcibademProject.Service
                             resultModel.OfferIds += productModelList.IndexOf(item) + 1 == productModelList.Count ? item.OfferIds : item.OfferIds + ",";
                             resultModel.ProductName = item.ProductName;
                             resultModel.ProductId = item.ProductId;
-                            //OfferNumber ı kaydetme yanlış customer bazında değil ürün bazında olmalı
                         }
                     }
 
@@ -363,71 +378,59 @@ namespace BupaAcibademProject.Service
             return new Result<ProductModel>();
         }
 
-        private async Task<Result<List<Offer>>> CalculateAndSaveOffer(CustomerModel customer)
+        private async Task<Result<Offer>> CalculateAndSaveOffer(Product product, Customer customer, string offerNumber)
         {
-            if (customer != null)
+            if (customer != null && product != null)
             {
-                var productList = GetProducts();
-
-                var offerList = new List<Offer>();
-
                 try
                 {
                     var age = DateTime.Now.Year - customer.DateOfBirth.Year;
-                    var offerNumber = new Random().Next(100000, 1000000).ToString();
+                    decimal price = product.Price;
 
-                    if (!productList.Result.HasError && productList.Result.Data != null)
+                    var bodyMassIndex = CalculateBodyMassIndex(customer.Weight, customer.Height);
+                    if (bodyMassIndex == BodyMassIndex.LOW || bodyMassIndex == BodyMassIndex.OWERWEIGHT)
                     {
-                        foreach (var product in productList.Result.Data)
+                        price = product.Price + (product.Price / 5);
+                    }
+                    else if (bodyMassIndex == BodyMassIndex.OBESE)
+                    {
+                        price = product.Price + (product.Price / 10);
+                    }
+
+                    if (age > 50)
+                    {
+                        price = product.Price + (product.Price / 5);
+                    }
+                    else if (age > 65)
+                    {
+                        price = product.Price + (product.Price / 10);
+                    }
+
+                    var offer = new Offer()
+                    {
+                        CustomerId = customer.Id,
+                        ProductId = product.Id,
+                        TotalPrice = price,
+                        CompanyName = "Bupa Acıbadem Sigorta",
+                        OfferNumber = offerNumber
+                    };
+
+                    var saveOfferResult = SaveOffer(offer);
+                    if (!saveOfferResult.Result.HasError && saveOfferResult.Result.Data != null)
+                    {
+                        return new Result<Offer>()
                         {
-                            var bodyMassIndex = CalculateBodyMassIndex(customer.Weight, customer.Height);
-                            if (bodyMassIndex == BodyMassIndex.LOW || bodyMassIndex == BodyMassIndex.OWERWEIGHT)
-                            {
-                                product.Price *= 5;
-                            }
-                            else if (bodyMassIndex == BodyMassIndex.OBESE)
-                            {
-                                product.Price *= 10;
-                            }
-
-                            if (age > 50)
-                            {
-                                product.Price *= 5;
-                            }
-                            else if (age > 65)
-                            {
-                                product.Price *= 10;
-                            }
-
-                            var offer = new Offer()
-                            {
-                                CustomerId = customer.CityId,
-                                ProductId = product.Id,
-                                TotalPrice = product.Price,
-                                CompanyName = "Bupa Acıbadem Sigorta",
-                                OfferNumber = offerNumber
-                            };
-
-                            var saveOfferResult = SaveOffer(offer);
-                            if (!saveOfferResult.Result.HasError && saveOfferResult.Result.Data != null)
-                            {
-                                offerList.Add(offer);
-                            }
-                        }
+                            Data = offer
+                        };
                     }
                 }
                 catch (Exception ex)
                 {
-                    return new Result<List<Offer>>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                    return new Result<Offer>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
                 }
-
-                return new Result<List<Offer>>()
-                {
-                    Data = offerList
-                };
             }
 
-            return new Result<List<Offer>>();
+            return new Result<Offer>();
         }
         private async Task<Result<Offer>> SaveOffer(Offer offer)
         {
@@ -513,6 +516,64 @@ namespace BupaAcibademProject.Service
             }
 
             return BodyMassIndex.OBESE;
+        }
+
+        public async Task<Result<Policy>> CreatePolicy(PolicyModel model)
+        {
+            if (model != null)
+            {
+                try
+                {
+                    var validationResult = _validation.Validate(model);
+                    if (validationResult.HasError)
+                    {
+                        return new Result<Policy>(validationResult);
+                    }
+
+                    _dal.AddInputParameter(
+                        new SqlParameter("@InsurerId", model.InsurerId),
+                        new SqlParameter("@OfferIds", model.OfferIds),
+                        new SqlParameter("@TotalPrice", model.TotalPrice),
+                        new SqlParameter("@PolicyIsDone", model.PolicyIsDone)
+                        );
+
+                    var insertResult = _dal.ExecuteQuery("sp_CreatePolicy", CommandType.StoredProcedure);
+
+                    var policy = default(Policy);
+
+                    _dal.AddInputParameter(
+                        new SqlParameter("@InsurerId", model.InsurerId),
+                        new SqlParameter("@OfferIds", model.OfferIds),
+                        new SqlParameter("@TotalPrice", model.TotalPrice),
+                        new SqlParameter("@PolicyIsDone", model.PolicyIsDone)
+                        );
+
+                    var dr = _dal.ExecuteDrSelectQuery("sp_GetPolicyByParameters", CommandType.StoredProcedure);
+                    if (dr.HasRows)
+                    {
+                        while (dr.Read())
+                        {
+                            var policyResult = new Policy
+                            {
+                                Id = Convert.ToInt32(dr["Id"]),
+                                OfferIds = dr["OfferIds"].ToString(),
+                                TotalPrice = Convert.ToDecimal(dr["TotalPrice"]),
+                                PolicyIsDone = Convert.ToBoolean(dr["PolicyIsDone"])
+                            };
+
+                            policy = policyResult;
+                        }
+                    }
+
+                    return new Result<Policy>() { Data = policy };
+                }
+                catch (Exception ex)
+                {
+                    return new Result<Policy>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+                }
+            }
+
+            return new Result<Policy>();
         }
     }
 }

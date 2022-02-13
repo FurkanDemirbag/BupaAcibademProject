@@ -6,12 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BupaAcibademProject.Domain.Entities
+namespace BupaAcibademProject.Domain.Models.FrontEnd
 {
-    [Serializable]
-    public class Policy : Entity
+    public class PolicyModel
     {
-
         [Display(Name = "Insurer Id")]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public int InsurerId { get; set; }
@@ -31,15 +29,5 @@ namespace BupaAcibademProject.Domain.Entities
         [Display(Name = "Poliçe tamamlandı mı?")]
         [Required(ErrorMessage = "{0} boş olamaz")]
         public bool PolicyIsDone { get; set; }
-
-
-        public Insurer Insurer { get; set; }
-        public Installment Installment { get; set; }
-
-        public List<PolicyDetail> PolicyDetails { get; set; }
-
-        public Policy() : base()
-        {
-        }
     }
 }
