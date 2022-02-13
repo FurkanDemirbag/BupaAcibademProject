@@ -299,5 +299,36 @@ namespace BupaAcibademProject.WebAPI.Controllers
                 TotalPrice = result.Data.TotalPrice
             };
         }
+
+        [HttpGet]
+        [Route("ContinuePolicy")]
+        public async Task<ActionResult<ContinuePolicyModel>> ContinuePolicy(int installmentId, int policyId)
+        {
+            if (installmentId == 0 || policyId == 0)
+            {
+                return new ContinuePolicyModel()
+                {
+                    ErrorCode = StatusCodes.Status404NotFound.ToString(),
+                    ErrorMessage = "Taksit veya poliçe bulunamadı."
+                };
+            }
+
+            var result = await _policyService.ContinuePolicy(installmentId, policyId);
+            if (result.HasError)
+            {
+                return new ContinuePolicyModel()
+                {
+                    ErrorCode = result.Errors.First().Code,
+                    ErrorMessage = result.Errors.First().Message
+                };
+            }
+
+            return new ContinuePolicyModel()
+            {
+                Success = true,
+                InstallmentId = result.Data.InstallmentId,
+                PolicyId = result.Data.PolicyId
+            };
+        }
     }
 }

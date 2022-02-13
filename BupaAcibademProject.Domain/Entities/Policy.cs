@@ -37,6 +37,7 @@ namespace BupaAcibademProject.Domain.Entities
         public Installment Installment { get; set; }
 
         public List<PolicyDetail> PolicyDetails { get; set; }
+        public List<PaymentLog> PaymentLogs { get; set; }
 
         public Policy() : base()
         {

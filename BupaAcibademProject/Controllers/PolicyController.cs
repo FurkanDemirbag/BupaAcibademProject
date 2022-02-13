@@ -18,6 +18,7 @@ namespace BupaAcibademProject.Controllers
     public class PolicyController : Controller
     {
         //PROJEDE TÜM METODLARIN REST APIDEN ÇAĞRILMASI İSTENDİĞİ İÇİN; BURADA DİREK SERVİS KATMANINDAKİ METODA İSTEK ATMAK YERİNE APIYE İSTEK ATTIM, APIDEN DE SERVİS METODUNA İSTEK ATILIYOR
+        //WEB API PROJESINDEKİ İSTEKLER GELMİYORSA WEB API PROJESINDEKİ LOCALHOST ADRESİNİN BURADAKİ LOCALHOST'A SET EDİLMESİ GEREKİR 
         private string url;
         private readonly IUserAccessor _userAccessor;
 
@@ -265,10 +266,40 @@ namespace BupaAcibademProject.Controllers
 
             return this.ErrorJson("Taskit seçilirken hata oluştu.");
         }
+        public IActionResult ContinuePolicy(int installmentId)
+        {
+            if (installmentId == 0)
+            {
+                return this.ErrorJson("Seçili taksit bulunamadı.");
+            }
+
+            var currentUrl = url + "Policy/ContinuePolicy?installmentId=" + installmentId + "&policyId=" + _userAccessor.PolicyId;
+
+            var result = currentUrl.GetRequest();
+            if (result != null)
+            {
+                var continueResponse = JsonConvert.DeserializeObject<ContinuePolicyModel>(result);
+                if (continueResponse != null && continueResponse.Success)
+                {
+                    return this.SuccesJson();
+                }
+            }
+
+            return this.ErrorJson("Taskit seçilirken hata oluştu.");
+        }
 
         public IActionResult Payment()
         {
             var model = new PaymentModel();
+
+            if (_userAccessor.Insurer != null)
+            {
+                model.InsurerId = _userAccessor.Insurer.Id;
+            }
+            if (_userAccessor.PolicyId > 0)
+            {
+                model.PolicyId = _userAccessor.PolicyId;
+            }
 
             return View(model);
         }

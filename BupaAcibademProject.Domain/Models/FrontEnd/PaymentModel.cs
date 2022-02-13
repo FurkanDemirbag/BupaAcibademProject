@@ -14,6 +14,10 @@ namespace BupaAcibademProject.Domain.Models.FrontEnd
         [Required(ErrorMessage = "{0} boş olamaz.")]
         public int InsurerId { get; set; }
 
+        [Display(Name = "PolicyId")]
+        [Required(ErrorMessage = "{0} boş olamaz.")]
+        public int PolicyId { get; set; }
+
         [Display(Name = "Cvc")]
         [Required(ErrorMessage = "{0} boş olamaz.")]
         [StringLength(4, MinimumLength = 3, ErrorMessage = "{0} {1} ile {2} karakter uzunluğunda bir değer olmabilir")]

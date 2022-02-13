@@ -533,6 +533,35 @@ namespace BupaAcibademProject.Service
             }
         }
 
+        public async Task<Result<ContinuePolicyModel>> ContinuePolicy(int installmentId, int policyId)
+        {
+            if (installmentId == 0 || policyId == 0)
+            {
+                return new Result<ContinuePolicyModel>(StatusCodes.Status404NotFound.ToString(), "Taksit veya poliçe bulunamadı.");
+            }
+
+            try
+            {
+                var calculatedModel = await SelectInstallment(installmentId, policyId);
+                if (calculatedModel.HasError || calculatedModel.Data == null)
+                {
+                    return new Result<ContinuePolicyModel>(StatusCodes.Status500InternalServerError.ToString(), "Poliçe oluşturulurken hata oluştu.");
+                }
+
+                var updatePolicyResult = UpdatePolicy(policyId, installmentId, calculatedModel.Data.TotalPrice, false);
+                if (updatePolicyResult.Result.HasError || updatePolicyResult.Result.Data == null)
+                {
+                    return new Result<ContinuePolicyModel>(StatusCodes.Status500InternalServerError.ToString(), "Poliçe oluşturulurken hata oluştu.");
+                }
+
+                return new Result<ContinuePolicyModel>() { Data = new ContinuePolicyModel() { InstallmentId = installmentId, PolicyId = policyId } };
+            }
+            catch (Exception ex)
+            {
+                return new Result<ContinuePolicyModel>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
+        }
+
         private async Task<Result<Offer>> CalculateAndSaveOffer(Product product, Customer customer, string offerNumber)
         {
             if (customer != null && product != null)
@@ -618,6 +647,31 @@ namespace BupaAcibademProject.Service
             }
 
             return new Result<Offer>();
+        }
+        private async Task<Result<Policy>> UpdatePolicy(int policyId, int installmentId, decimal price, bool policyIsDone)
+        {
+            if (installmentId == 0 || policyId == 0 || price == 0)
+            {
+                return new Result<Policy>(StatusCodes.Status404NotFound.ToString(), "Taksit veya poliçe bulunamadı.");
+            }
+
+            try
+            {
+                _dal.AddInputParameter(
+                    new SqlParameter("@Id", policyId),
+                    new SqlParameter("@InstallmentId", installmentId),
+                    new SqlParameter("@TotalPrice", price),
+                    new SqlParameter("@PolicyIsDone", policyIsDone)
+                    );
+
+                var offerResult = _dal.ExecuteQuery("sp_UpdatePolicy", CommandType.StoredProcedure);
+
+                return new Result<Policy>() { Data = new Policy() { Id = policyId, InstallmentId = installmentId } };
+            }
+            catch (Exception ex)
+            {
+                return new Result<Policy>(StatusCodes.Status500InternalServerError.ToString(), await _logService.LogException(ex));
+            }
         }
         private async Task<Result<List<Product>>> GetProducts()
         {
@@ -738,5 +792,6 @@ namespace BupaAcibademProject.Service
 
             return BodyMassIndex.OBESE;
         }
+
     }
 }
